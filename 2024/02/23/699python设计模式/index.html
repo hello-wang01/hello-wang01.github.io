@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/javier-miranda-N7mrKzGhKro-unsplash.jpg">
 <meta property="article:published_time" content="2024-02-23T03:45:54.000Z">
-<meta property="article:modified_time" content="2025-01-27T14:11:52.769Z">
+<meta property="article:modified_time" content="2025-02-03T10:48:22.577Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta property="article:tag" content="python">
 <meta property="article:tag" content="笔记">
@@ -265,7 +265,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.9k 字
         
       </span>
     
@@ -276,7 +276,7 @@
         
         
         
-          11 分钟
+          16 分钟
         
       </span>
     
@@ -351,7 +351,65 @@
 <li>例:生产一部手机，需要手机壳、CPU、操作系统三类对象进行组装其中每类对象都有不同的种类。对每个具体工厂，分别生产一部手机所需要的三个对象。</li>
 <li>相比工厂方法模式，抽象工厂模式中的每个具体工厂都生产一套产品。</li>
 </ul>
-<h1 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h1><h1 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h1>
+<h2 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h2><ul>
+<li>内容:将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。</li>
+<li>角色<ul>
+<li>抽象建造者(Builder)</li>
+<li>具体建造者(Concrete Builder)</li>
+<li>指挥者(Director)</li>
+<li>产品(Product)</li>
+</ul>
+</li>
+<li>建造者模式与抽象工厂模式相似，也用来创建复杂对象。主要区别是建造者模式着重一步步构造一个复杂对象，而抽象工厂模式着重于多个系列的产品对象</li>
+<li>优点<ul>
+<li>隐藏了一个产品的内部结构和装配过程</li>
+<li>将构造代码与表示代码分开</li>
+<li>可以对构造过程进行更精细的控制</li>
+</ul>
+</li>
+</ul>
+<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>确保一个类只会创建出一个对象，并提供一个访问他的全局访问点</p>
+<ul>
+<li>角色<ul>
+<li>单例(Singleton)</li>
+</ul>
+</li>
+<li>优点<ul>
+<li>对唯一实例的受控访问</li>
+<li>单例相当于全局变量，但防止了命名空间被污染—&gt;不用单例也可以</li>
+</ul>
+</li>
+</ul>
+<p>一般日志系统会是单例，不然两个日志对象同时操作一个文件对象，会出现问题，</p>
+<blockquote>
+<p>抽象工厂模式和建造者模式相对比简单工厂模式和工厂方法模式而言更灵活也更复杂</p>
+<p>通常情况下、设计以简单工厂模式或工厂方法模式开始，当你发现设计需要更大的灵活性时，则像更复杂的设计模式演变</p>
+<p>——-设计应当从简单开始，简单无法满足时才考虑复杂设计模式</p>
+</blockquote>
+<h1 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h1><h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><ul>
+<li>内容:将一个类的接口转换成客户希望的另一个接口。适配器模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</li>
+<li>两种实现方式<ul>
+<li>类适配器：使用多继承</li>
+<li>对象适配器：使用组合</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> abc <span class="hljs-keyword">import</span> ABCMeta, abstractmethod<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Payment</span>(metaclass=ABCMeta):<br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pay</span>(<span class="hljs-params">self, money</span>):<br>        <span class="hljs-keyword">pass</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Alipay</span>(<span class="hljs-title class_ inherited__">Payment</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pay</span>(<span class="hljs-params">self, money</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;支付宝支付<span class="hljs-subst">&#123;money&#125;</span>元&quot;</span>)<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">WechatPay</span>(<span class="hljs-title class_ inherited__">Payment</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pay</span>(<span class="hljs-params">self, money</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;微信支付<span class="hljs-subst">&#123;money&#125;</span>元&quot;</span>)<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BankPay</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">cast</span>(<span class="hljs-params">self, money</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;银联支付<span class="hljs-subst">&#123;money&#125;</span>元&quot;</span>)<br><br><span class="hljs-comment"># 类适配器</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">NewBankPay</span>(Payment, BankPay):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pay</span>(<span class="hljs-params">self, money</span>):<br>        self.cast(money)<br>p = NewBankPay()<br>p.pay(<span class="hljs-number">100</span>)<br><br><span class="hljs-comment"># 对象适配器</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PaymentAdapter</span>(<span class="hljs-title class_ inherited__">Payment</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, payment</span>):<br>        self.payment = payment<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pay</span>(<span class="hljs-params">self, money</span>):<br>        self.payment.cast(money)<br><br>p = PaymentAdapter(BankPay())<br>p.pay(<span class="hljs-number">100</span>)<br><br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>角色:<ul>
+<li>目标接口(Target)</li>
+<li>待适配的类(Adaptee)</li>
+<li>适配器(Adapter)</li>
+</ul>
+</li>
+<li>适用场景</li>
+<li>想使用一个已经存在的类，而它的接口不符合你的要求</li>
+<li>(对象适配器)想使用一些已经存在的子类，但不可能对每一个都进行子类化以匹配它们的接口。对象适配器可以适配它的父类接口。</li>
+</ul>
+<h2 id="桥模式"><a href="#桥模式" class="headerlink" title="桥模式"></a>桥模式</h2><h1 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h1>
                 
               </div>
             
