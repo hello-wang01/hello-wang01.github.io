@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/solana1.jpg">
 <meta property="article:published_time" content="2024-11-22T07:26:30.000Z">
-<meta property="article:modified_time" content="2025-02-11T07:36:13.673Z">
+<meta property="article:modified_time" content="2025-02-14T09:28:43.040Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta property="article:tag" content="block">
 <meta property="article:tag" content="概念">
@@ -265,7 +265,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          2.7k 字
         
       </span>
     
@@ -276,7 +276,7 @@
         
         
         
-          18 分钟
+          23 分钟
         
       </span>
     
@@ -394,6 +394,57 @@
 <p>如果想提高其交易的优先级【可选的费用】，它可以设置一个 “计算单元价格”。 这个价格与 <a target="_blank" rel="noopener" href="https://solana.com/zh/docs/core/fees#compute-unit-limit">计算单元限制</a> 结合使用，用来确定交易的优先级费用。</p>
 <p>默认的计算单元限制为 <a target="_blank" rel="noopener" href="https://github.com/anza-xyz/agave/blob/b7bbe36918f23d98e2e73502e3c4cba78d395ba9/program-runtime/src/compute_budget_processor.rs#L18">每个指令 20 万 CU</a>， 如果计算量比较大，可以设置最大为 140 万 Cu。 Solana 交易会预先请求指定数量的计算单元（CUs），如果超出这个数量，交易将失败。</p>
 <p>另外，Solana 交易还会收交易包大小的限制，Solana 网络遵循最大传输单元 (MTU) 大小为 1280 字节，这与 IPv6 MTU 大小约束一致，以确保通过 UDP 传输集群信息的快速和可靠性。在计算必要的标头（IPv6 的 40 字节和 8 字节的片段头）后，1232 字节仍然可用于数据包， 签名和消息的组合不能超过此限制。</p>
+<blockquote>
+<p> 以下官方视频介绍</p>
+</blockquote>
+<h1 id="Accounts"><a href="#Accounts" class="headerlink" title="Accounts"></a>Accounts</h1><p>sol Accounts 模型</p>
+<p>Solana 上的宗旨是一切皆为帐户，类似Linux 的一切皆文件一样，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">&#123;<br>  &quot;key&quot;:number,// 视为区块链公共地址<br>  &quot;lamports&quot;:number, // 实际总余额 本地soltoken 的最小单位，1 lamports=0.0000000001sol<br>  &quot;data&quot;:Unit8Array,// 无符号整数存储的原始字节<br>  &quot;is_executable&quot;:boolean, // 是否为程序，如果为true 就是可执行程序，flase就是普通数据帐户<br>  &quot;ower&quot;:Publickey // 所有者，只有该帐户的所有者才可以更新该帐户内数据<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="Programs"><a href="#Programs" class="headerlink" title="Programs"></a>Programs</h1><p>Programs 程序就是solana 上的智能合约Smart contracts on Solana</p>
+<ul>
+<li><p>程序是无状态的，只能读取和写入别人的帐户数据</p>
+</li>
+<li><p>必须是帐户所有者才能修改</p>
+</li>
+<li><p>程序运行指令</p>
+</li>
+<li><p>程序能发送指令给其他程序</p>
+</li>
+</ul>
+<p>总结</p>
+<ul>
+<li>一切皆程序</li>
+<li>所有帐户都持有SOL</li>
+<li>帐户能存储任意数据</li>
+<li>帐户也能存储<strong>可执行程序</strong></li>
+<li>帐户也能床底到程序中并行执行</li>
+</ul>
+<h1 id="Programs-Instructions"><a href="#Programs-Instructions" class="headerlink" title="Programs Instructions"></a>Programs Instructions</h1><p>程序指令</p>
+<p>原始模型：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs go">&#123;<br>  <span class="hljs-string">&quot;program_id&quot;</span>:number,<span class="hljs-comment">// 指定程序的id,该指令用于的程序</span><br>  <span class="hljs-string">&quot;keys&quot;</span>:Array&lt;&#123; <span class="hljs-comment">// 设计指令的帐户，这里用了数组，说明是可以传递多个的</span><br>    <span class="hljs-string">&quot;key&quot;</span>:Publcky,<br>    <span class="hljs-string">&quot;is_mutable&quot;</span>:boolean,<br>    <span class="hljs-string">&quot;is_signer&quot;</span>:boolean,<br>  &#125;&gt;,<br>  <span class="hljs-string">&quot;data&quot;</span>:Unit8Array <span class="hljs-comment">//你有一定量的数据通过原始字节的形式发送到网络中</span><br>&#125;<br><br><br><span class="hljs-comment">// 下面是go中的</span><br><span class="hljs-keyword">type</span> Instruction <span class="hljs-keyword">struct</span> &#123;<br>	ProgramID common.PublicKey<br>	Accounts  []AccountMeta<br>	Data      []<span class="hljs-type">byte</span><br>&#125;<br><br><span class="hljs-keyword">type</span> AccountMeta <span class="hljs-keyword">struct</span> &#123;<br>	PubKey     common.PublicKey<br>	IsSigner   <span class="hljs-type">bool</span><br>	IsWritable <span class="hljs-type">bool</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>多个指令捆绑在一起，就可以组成一个交易</p>
+<p>Transactions 交易</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go">message := types.NewMessage(<br>   types.NewMessageParam&#123;<br>      FeePayer:        common.PublicKeyFromString(alice.PublicKey.String()),<br>      Instructions:    ins,<br>      RecentBlockhash: recentBlockhashResponse.Blockhash,<br>   &#125;)<br>tx, err := types.NewTransaction(types.NewTransactionParam&#123;<br>   Message: message,<br>   Signers: []types.Account&#123;alice&#125;,<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>总结</p>
+<ul>
+<li>程序调用指令</li>
+<li>指令通过交易发送广播出去</li>
+<li>交易需要是原子的</li>
+<li>所有交易都必须签名</li>
+</ul>
+<p>Solana 交易的生命周期—-&gt;不单单是solana 很多题目都会出现</p>
+<ul>
+<li>指令包含什么：程序id、 帐户key数组 、data</li>
+<li>交易包含什么：指令、RecentBlockhash、签名消息、fee支付者</li>
+<li>去中心化应用DAPP 客户端 组装交易（指令），</li>
+<li>交易被发送到RPC 客户端 </li>
+<li>RPC客户端把所有交易转发给投票验证者</li>
+<li>验证者将实际使用solana运行时来启用，运行时实际执行每个交易内的每个指令</li>
+<li>每个指令将调用一个特定程序来实际执行该程序代码试图做的事情，这个程序只是增加一个计数器并递增1</li>
+</ul>
 
                 
               </div>
