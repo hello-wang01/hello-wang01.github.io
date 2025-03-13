@@ -16,27 +16,25 @@
   <meta name="author" content="Wangxiaowang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="1.事务的ACID特性在数据库中，“事务”是由多个操作构成的序列。广义上的事务一致性具化到了原子性、一致性、隔离性和持久性这4个方面。  原子性（Atomicity）：指事务是一个不可分割的操作单元，要么全部执行成功，要么全部失败回滚。如果事务中的任何一个操作失败，整个事务将回滚到最初的状态。 一致性（Consistency）：指事务将数据库从一个一致状态转变为另一个一致状态。在事务开始和结束时，">
+    <meta name="description" content="Tron钱包开发详细教程一 Tron 简介Tron（波场） 是一个兼容 EVM 的区块链平台,  Tron的技术架构由三层组成：  存储层：包括区块存储和状态存储，支持多种存储机制。 核心层：实现了智能合约、账户管理和共识机制（目前使用的是DPoS，即委托权益证明）。 应用层：为开发者提供API和SDK，支持开发去中心化应用（DApps）  1.主要组件和功能 Tron虚拟机（TVM）：兼容以太坊">
 <meta property="og:type" content="article">
-<meta property="og:title" content="02 探讨事务一致性">
-<meta property="og:url" content="http://example.com/2024/05/18/02%E6%8E%A2%E8%AE%A8%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7/index.html">
+<meta property="og:title" content="07-8TRON波场钱包开发流程">
+<meta property="og:url" content="http://example.com/2025/03/13/07-8TRON%E6%B3%A2%E5%9C%BA%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Wang">
-<meta property="og:description" content="1.事务的ACID特性在数据库中，“事务”是由多个操作构成的序列。广义上的事务一致性具化到了原子性、一致性、隔离性和持久性这4个方面。  原子性（Atomicity）：指事务是一个不可分割的操作单元，要么全部执行成功，要么全部失败回滚。如果事务中的任何一个操作失败，整个事务将回滚到最初的状态。 一致性（Consistency）：指事务将数据库从一个一致状态转变为另一个一致状态。在事务开始和结束时，">
+<meta property="og:description" content="Tron钱包开发详细教程一 Tron 简介Tron（波场） 是一个兼容 EVM 的区块链平台,  Tron的技术架构由三层组成：  存储层：包括区块存储和状态存储，支持多种存储机制。 核心层：实现了智能合约、账户管理和共识机制（目前使用的是DPoS，即委托权益证明）。 应用层：为开发者提供API和SDK，支持开发去中心化应用（DApps）  1.主要组件和功能 Tron虚拟机（TVM）：兼容以太坊">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/web3/btb4.jpg">
-<meta property="article:published_time" content="2024-05-18T03:20:10.000Z">
-<meta property="article:modified_time" content="2025-03-13T02:04:36.565Z">
+<meta property="og:image" content="http://example.com/img/web3/tron3.png">
+<meta property="article:published_time" content="2025-03-13T01:55:16.000Z">
+<meta property="article:modified_time" content="2025-03-13T07:02:30.801Z">
 <meta property="article:author" content="Wangxiaowang">
-<meta property="article:tag" content="block">
-<meta property="article:tag" content="概念">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/web3/btb4.jpg">
+<meta name="twitter:image" content="http://example.com/img/web3/tron3.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>02 探讨事务一致性 - Wang</title>
+  <title>07-8TRON波场钱包开发流程 - Wang</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -236,13 +234,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/web3/eth1.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/web3/tron4.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="02 探讨事务一致性"></span>
+            <span id="subtitle" data-typed-text="07-8TRON波场钱包开发流程"></span>
           
         </div>
 
@@ -253,8 +251,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-05-18 11:20" pubdate>
-          2024年5月18日 上午
+        <time datetime="2025-03-13 09:55" pubdate>
+          2025年3月13日 上午
         </time>
       </span>
     
@@ -265,7 +263,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          677 字
+          1.7k 字
         
       </span>
     
@@ -276,7 +274,7 @@
         
         
         
-          6 分钟
+          15 分钟
         
       </span>
     
@@ -313,33 +311,227 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">02 探讨事务一致性</h1>
+            <h1 id="seo-header">07-8TRON波场钱包开发流程</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="1-事务的ACID特性"><a href="#1-事务的ACID特性" class="headerlink" title="1.事务的ACID特性"></a>1.事务的ACID特性</h2><p>在数据库中，“事务”是由多个操作构成的序列。广义上的事务一致性具化到了原子性、一致性、隔离性和持久性这4个方面。</p>
-<ol>
-<li><code>原子性（Atomicity）：</code>指事务是一个不可分割的操作单元，要么全部执行成功，要么全部失败回滚。如果事务中的任何一个操作失败，整个事务将回滚到最初的状态。</li>
-<li><code>一致性（Consistency）：</code>指事务将数据库从一个一致状态转变为另一个一致状态。在事务开始和结束时，数据库必须满足预定义的一致性规则，以保持数据的有效性和完整性。</li>
-<li><code>隔离性（Isolation）：</code>指每个事务的执行应该与其他事务的执行相互隔离，以防止彼此干扰。隔离级别定义了事务之间的隔离程度，包括已提交读、可重复读、快照隔离和可串行化。</li>
-<li><code>持久性（Durability）：</code>指一旦事务提交，其结果就应该永久保存在数据库中，即使系统发生故障也不会丢失。数据库通过将事务日志持久化到磁盘来实现持久性。</li>
-</ol>
-<h3 id="1-1-原子性和一致性的差异"><a href="#1-1-原子性和一致性的差异" class="headerlink" title="1.1 原子性和一致性的差异"></a>1.1 原子性和一致性的差异</h3><p><code>原子性</code>关注事务内部状态，要不全部成功，要不全部失败</p>
-<p><code>一致性</code>关注数据可见性，中间状态的数据对外不可见，只有最初状态和最终状态的数据对外可见</p>
-<h3 id="1-2-持久性核心思想即应对系统故障"><a href="#1-2-持久性核心思想即应对系统故障" class="headerlink" title="1.2 持久性核心思想即应对系统故障"></a>1.2 持久性核心思想即应对系统故障</h3><blockquote>
-<p>目的都是保证在本地节点之外，至少有一份完整的日志可用于数据恢复。</p>
-</blockquote>
-<p><strong>存储硬件无损、可恢复故障：</strong> 主要依托于预写日志（Write Ahead Log, WAL）保证第一时间存储数据。WAL采用顺序写入的方式，可以保证数据库的低延时响应。</p>
-<p><strong>存储硬件损坏、不可恢复的故障：</strong> 需要用到日志复制技术，将本地日志及时同步到其他节点。</p>
+                <h1 id="Tron钱包开发详细教程"><a href="#Tron钱包开发详细教程" class="headerlink" title="Tron钱包开发详细教程"></a>Tron钱包开发详细教程</h1><h1 id="一-Tron-简介"><a href="#一-Tron-简介" class="headerlink" title="一 Tron 简介"></a>一 Tron 简介</h1><p>Tron（波场） 是一个兼容 EVM 的区块链平台,  Tron的技术架构由三层组成：</p>
 <ul>
-<li>单体数据库自带的同步或半同步的方式，其中半同步方式具有一定的容错能力</li>
-<li>日志存储到共享存储系统上，后者会通过冗余存储保证日志的安全性</li>
-<li>基于Paxos&#x2F;Raft的共识算法同步日志数据，在分布式数据库中被广泛使用</li>
+<li>存储层：包括区块存储和状态存储，支持多种存储机制。</li>
+<li>核心层：实现了智能合约、账户管理和共识机制（目前使用的是DPoS，即委托权益证明）。</li>
+<li>应用层：为开发者提供API和SDK，支持开发去中心化应用（DApps）</li>
 </ul>
-<h3 id="1-3-隔离性分为多个隔离级别"><a href="#1-3-隔离性分为多个隔离级别" class="headerlink" title="1.3 隔离性分为多个隔离级别"></a>1.3 隔离性分为多个隔离级别</h3><blockquote>
-<p>较低的隔离级别就是在正确性上做妥协，将一些异常现象交给应用系统的开发人员去解决，从而获得更好的性能。</p>
-</blockquote>
+<h2 id="1-主要组件和功能"><a href="#1-主要组件和功能" class="headerlink" title="1.主要组件和功能"></a>1.主要组件和功能</h2><ul>
+<li>Tron虚拟机（TVM）：兼容以太坊虚拟机（EVM），使开发者可以轻松将以太坊上的应用迁移到Tron上。</li>
+<li>智能合约：支持Solidity语言编写的智能合约。</li>
+<li>TRC-20和TRC-721标准：TRC-20是Tron的代币标准，类似于以太坊的ERC-20；TRC-721则是非同质化代币标准，类似于ERC-721。</li>
+</ul>
+<h2 id="2-共识机制"><a href="#2-共识机制" class="headerlink" title="2.共识机制"></a>2.共识机制</h2><ul>
+<li>Tron采用委托权益证明（DPoS）机制。TRX持有者可以投票选举超级代表（Super Representatives，SR），这些SR负责验证交易和维护网络的安全。</li>
+</ul>
+<h2 id="3-生态系统"><a href="#3-生态系统" class="headerlink" title="3.生态系统"></a>3.生态系统</h2><ul>
+<li>Tron生态系统包含多个重要组件和项目：</li>
+<li>TronLink：官方钱包，支持TRX和TRC-20代币的存储和交易。</li>
+<li>JustSwap：去中心化交易所，支持TRC-20代币的交易。</li>
+<li>Sun Network：侧链扩展方案，旨在提升Tron主网的扩展性。</li>
+<li>BitTorrent：Tron收购的去中心化文件共享协议，与Tron网络深度集成。</li>
+<li>DApps：大量去中心化应用在 Tron 平台上运行。</li>
+</ul>
+<h2 id="代币（TRX）"><a href="#代币（TRX）" class="headerlink" title="代币（TRX）"></a>代币（TRX）</h2><ul>
+<li>Tron的原生代币是TRX，主要用于以下几个方面：</li>
+<li>交易费用：支付网络上的交易费用。</li>
+<li>Staking和投票：TRX持有者可以质押代币并参与超级代表的选举。</li>
+<li>DApp支付：在Tron平台上的去中心化应用中进行支付和交易。</li>
+</ul>
+<h2 id="其他信息"><a href="#其他信息" class="headerlink" title="其他信息"></a>其他信息</h2><ul>
+<li>精度</li>
+<li>官方网站：<a target="_blank" rel="noopener" href="https://tron.network/index?lng=zh">https://tron.network/index?lng=zh</a></li>
+<li>官方集成文档：<a target="_blank" rel="noopener" href="https://developers.tron.network/">https://developers.tron.network/</a></li>
+</ul>
+<hr>
+<ul>
+<li><p>是否支持代币：支持</p>
+</li>
+<li><p>是否支持质押：支持</p>
+</li>
+<li><p>区块浏览器</p>
+<ul>
+<li>主网：<a target="_blank" rel="noopener" href="https://tronscan.org/#/">https://tronscan.org/#/</a></li>
+<li>测试网：<a target="_blank" rel="noopener" href="https://nile.tronscan.org/?_gl=1">https://nile.tronscan.org/?_gl=1</a></li>
+</ul>
+</li>
+<li><p>出块时间：每个区块的生成时间约为 <strong>3 秒</strong>。</p>
+</li>
+<li><p>确认位：Tron 使用 <strong>DPoS（委托权益证明）</strong>共识机制，由 27 个超级代表（Super Representatives, SR）轮流出块。通常情况下，<strong>19 个区块确认</strong>（约 57 秒）被认为是最终确认。</p>
+</li>
+<li><p>吞吐量：Tron 的吞吐量可以达到 <strong>2000+ TPS（每秒交易数）</strong>，远高于以太坊等区块链。</p>
+</li>
+<li><p>地址：Tron 地址是一个 <strong>Base58Check 编码的字符串</strong>，长度为 <strong>34 个字符</strong>，通常以字母 <strong>“T”</strong> 开头。例如：</p>
+<ul>
+<li>主网地址以 <strong>“T”</strong> 开头。</li>
+<li>测试网地址以 <strong>“27”</strong> 开头。</li>
+</ul>
+</li>
+<li><p>构建交易案例：</p>
+</li>
+<li><p>交易签名算法：</p>
+</li>
+<li><p>同步模型</p>
+<ul>
+<li><p><input checked="" disabled="" type="checkbox"> 
+多地址 Account</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+多地址 UTxO</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+单地址 Memo</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+单地址 Paging</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+其它方式</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="矿工费形式，TRON比较特殊，单独列出来"><a href="#矿工费形式，TRON比较特殊，单独列出来" class="headerlink" title="矿工费形式，TRON比较特殊，单独列出来"></a>矿工费形式，TRON比较特殊，单独列出来</h2><p>矿工费形式：</p>
+<h3 id="1-能量（Energy）和带宽（Bandwidth）"><a href="#1-能量（Energy）和带宽（Bandwidth）" class="headerlink" title="1.能量（Energy）和带宽（Bandwidth）"></a>1.能量（Energy）和带宽（Bandwidth）</h3><ul>
+<li><p>Tron 使用两种资源来计算交易费用：</p>
+<ul>
+<li><p><strong>带宽（Bandwidth）</strong>：用于普通交易（如转账 TRX 或调用智能合约）。</p>
+</li>
+<li><p><strong>能量（Energy）</strong>：用于执行智能合约的复杂操作。</p>
+</li>
+</ul>
+</li>
+<li><p>用户可以通过以下方式获取带宽和能量：</p>
+<ul>
+<li><p><strong>质押 TRX</strong>：用户可以通过质押（冻结）TRX 来获得带宽和能量。</p>
+</li>
+<li><p><strong>直接支付 TRX</strong>：如果用户没有足够的带宽或能量，可以直接用 TRX 支付交易费用。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-带宽（Bandwidth）"><a href="#2-带宽（Bandwidth）" class="headerlink" title="2.带宽（Bandwidth）"></a>2.<strong>带宽（Bandwidth）</strong></h3><ul>
+<li><p><strong>用途</strong>：用于普通交易（如 TRX 转账、TRC-10 代币转账）。</p>
+</li>
+<li><p>获取方式</p>
+<p>：</p>
+<ul>
+<li>每天免费获得一定数量的带宽（基于质押的 TRX 数量）。</li>
+<li>如果带宽不足，可以用 TRX 支付交易费用。</li>
+</ul>
+</li>
+<li><p>费用计算</p>
+<p>：</p>
+<ul>
+<li>每笔交易消耗固定的带宽点数（例如，TRX 转账消耗约 200 带宽）。</li>
+<li>如果带宽不足，每字节交易数据消耗 0.002 TRX。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-能量（Energy）"><a href="#3-能量（Energy）" class="headerlink" title="3. 能量（Energy）"></a>3. <strong>能量（Energy）</strong></h3><ul>
+<li><p><strong>用途</strong>：用于执行智能合约（如 TRC-20 代币转账、调用智能合约）。</p>
+</li>
+<li><p>获取方式</p>
+<p>：</p>
+<ul>
+<li>通过质押 TRX 获得能量。</li>
+<li>如果能量不足，可以用 TRX 支付交易费用。</li>
+</ul>
+</li>
+<li><p>费用计算</p>
+<p>：</p>
+<ul>
+<li>能量消耗取决于智能合约的复杂性和计算资源需求。</li>
+<li>如果能量不足，每单位能量消耗 0.00001 TRX。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-TRX-支付"><a href="#4-TRX-支付" class="headerlink" title="4. TRX 支付"></a>4. <strong>TRX 支付</strong></h3><p>如果用户没有足够的带宽或能量，可以直接用 TRX 支付交易费用。费用会根据交易类型和资源消耗动态计算。</p>
+<hr>
+<h3 id="5-免费交易"><a href="#5-免费交易" class="headerlink" title="5. 免费交易"></a>5. <strong>免费交易</strong></h3><p>Tron 允许用户每天进行一定数量的免费交易（基于质押的 TRX 数量）。这些免费交易使用带宽，而不消耗 TRX。</p>
+<hr>
+<h3 id="6-矿工费优势"><a href="#6-矿工费优势" class="headerlink" title="6. 矿工费优势"></a>6. <strong>矿工费优势</strong></h3><ul>
+<li><strong>低费用</strong>：Tron 的交易费用通常比以太坊低得多，尤其是普通转账。</li>
+<li><strong>灵活性</strong>：用户可以选择质押 TRX 获取资源，或者直接支付 TRX。</li>
+<li><strong>高效性</strong>：Tron 的高吞吐量（2000+ TPS）和低延迟使得交易处理速度更快。</li>
+</ul>
+<hr>
+<h3 id="7-示例"><a href="#7-示例" class="headerlink" title="7. 示例"></a>7. <strong>示例</strong></h3><ul>
+<li><strong>TRX 转账</strong>：消耗带宽，费用极低（约 0.00001 TRX）。</li>
+<li><strong>TRC-20 代币转账</strong>：消耗能量，费用稍高（约 0.1-1 TRX，取决于合约复杂性）。</li>
+<li><strong>智能合约调用</strong>：消耗能量，费用取决于合约的计算复杂度。</li>
+</ul>
+<hr>
+<h3 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. <strong>总结</strong></h3><p>Tron 的矿工费形式以带宽和能量为核心，用户可以通过质押 TRX 获取资源，或者直接支付 TRX。这种设计使得 Tron 的交易费用更低、更灵活，适合高频交易和去中心化应用（DApps）的运行。</p>
+<p>如果你有更多关于 Tron 的问题，欢迎继续提问！</p>
+<h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><p><strong>节点构建和使用文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/tutorial/node/install.html">https://docs.vite.org/vite-docs/tutorial/node/install.html</a></p>
+<p><strong>RPC文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/api/rpc/ledger_v2.html">https://docs.vite.org/vite-docs/api/rpc/ledger_v2.html</a></p>
+<p><strong>RPC通信方式</strong></p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> HTTP(s)</li>
+<li><input disabled="" type="checkbox"> WebSocket</li>
+<li><input disabled="" type="checkbox"> GRPC<br><strong>公共节点</strong></li>
+</ul>
+<h3 id="公共节点"><a href="#公共节点" class="headerlink" title="公共节点"></a>公共节点</h3><p>节点：<a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/tutorial/sppguide/tutorials/dev-wallet.html#personal-wallet-setup">https://docs.vite.org/vite-docs/tutorial/sppguide/tutorials/dev-wallet.html#personal-wallet-setup</a></p>
+<ol>
+<li>[主网]：<a target="_blank" rel="noopener" href="https://node.vite.net/gvite">https://node.vite.net/gvite</a></li>
+<li>[测试网]：<a target="_blank" rel="noopener" href="https://buidl.vite.net/gvite">https://buidl.vite.net/gvite</a></li>
+</ol>
+<h3 id="浏览器钱包"><a href="#浏览器钱包" class="headerlink" title="浏览器钱包"></a>浏览器钱包</h3><p><a target="_blank" rel="noopener" href="https://app.vite.net/">https://app.vite.net/</a></p>
+<h2 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h2><p>仓库：<a target="_blank" rel="noopener" href="https://github.com/vitelabs/go-vite">https://github.com/vitelabs/go-vite</a></p>
+<p>交易所整合VITE：<a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/tutorial/faq/dex.html">https://docs.vite.org/vite-docs/tutorial/faq/dex.html</a></p>
+<p>API：<a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/tutorial/faq/dex.html#">https://docs.vite.org/vite-docs/tutorial/faq/dex.html#</a></p>
+<p><strong>编程语言</strong></p>
+<p>Go</p>
+<p><strong>以下流程是否完整支持</strong></p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> HTTP</li>
+<li><input checked="" disabled="" type="checkbox"> 构建待签名交易</li>
+<li><input checked="" disabled="" type="checkbox"> 合并签名和原始交易</li>
+<li><input checked="" disabled="" type="checkbox"> 获取签名交易 ID</li>
+<li><input checked="" disabled="" type="checkbox"> 生成地址</li>
+<li><input checked="" disabled="" type="checkbox"> 校验地址</li>
+</ul>
+<h1 id="地址生成"><a href="#地址生成" class="headerlink" title="地址生成"></a>地址生成</h1><h1 id="构建交易"><a href="#构建交易" class="headerlink" title="构建交易"></a>构建交易</h1><p>Tron 地址的生成过程如下：</p>
+<ol>
+<li><p><strong>生成私钥</strong>：随机生成一个 256 位的私钥。</p>
+</li>
+<li><p><strong>生成公钥</strong>：通过椭圆曲线加密算法（ECDSA，secp256k1）从私钥生成公钥。</p>
+</li>
+<li><p>计算公钥哈希：</p>
+<ul>
+<li><p>对公钥进行 Keccak-256 哈希运算。</p>
+</li>
+<li><p>取哈希值的最后 20 字节作为公钥哈希。</p>
+</li>
+</ul>
+</li>
+<li><p>添加前缀：</p>
+<ul>
+<li>在主网中，添加字节 <code>0x41</code> 作为前缀。</li>
+</ul>
+</li>
+<li><p>计算校验和：</p>
+<ul>
+<li>对前缀和公钥哈希进行两次 SHA-256 哈希运算。</li>
+<li>取前 4 个字节作为校验和。</li>
+</ul>
+</li>
+<li><p>Base58Check 编码：</p>
+<ul>
+<li>将前缀、公钥哈希和校验和组合，并进行 Base58Check 编码，生成最终的 Tron 地址。</li>
+</ul>
+</li>
+</ol>
 
                 
               </div>
@@ -348,36 +540,6 @@
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/blockChain/" class="category-chain-item">blockChain</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/block/" class="print-no-link">#block</a>
-      
-        <a href="/tags/%E6%A6%82%E5%BF%B5/" class="print-no-link">#概念</a>
-      
-    </div>
   
 </div>
 
@@ -387,8 +549,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>02 探讨事务一致性</div>
-      <div>http://example.com/2024/05/18/02探讨事务一致性/</div>
+      <div>07-8TRON波场钱包开发流程</div>
+      <div>http://example.com/2025/03/13/07-8TRON波场钱包开发流程/</div>
     </div>
     <div class="license-meta">
       
@@ -400,7 +562,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年5月18日</div>
+          <div>2025年3月13日</div>
         </div>
       
       
@@ -432,18 +594,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/05/19/02%E9%92%B1%E5%8C%85/" title="02 钱包">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">02 钱包</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/05/17/01%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" title="01 分布式基础理论">
-                        <span class="hidden-mobile">01 分布式基础理论</span>
+                      <a href="/2024/11/26/07-7DOT%E6%B3%A2%E5%8D%A1%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/" title="07-7DOT波卡钱包开发流程">
+                        <span class="hidden-mobile">07-7DOT波卡钱包开发流程</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
