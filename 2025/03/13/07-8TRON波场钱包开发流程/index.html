@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/tron3.png">
 <meta property="article:published_time" content="2025-03-13T01:55:16.000Z">
-<meta property="article:modified_time" content="2025-03-13T07:02:30.801Z">
+<meta property="article:modified_time" content="2025-03-15T08:24:54.450Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/tron3.png">
@@ -263,7 +263,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          1.9k 字
         
       </span>
     
@@ -274,7 +274,7 @@
         
         
         
-          15 分钟
+          16 分钟
         
       </span>
     
@@ -419,38 +419,36 @@
 <h3 id="2-带宽（Bandwidth）"><a href="#2-带宽（Bandwidth）" class="headerlink" title="2.带宽（Bandwidth）"></a>2.<strong>带宽（Bandwidth）</strong></h3><ul>
 <li><p><strong>用途</strong>：用于普通交易（如 TRX 转账、TRC-10 代币转账）。</p>
 </li>
-<li><p>获取方式</p>
-<p>：</p>
+<li><p>获取方式：</p>
 <ul>
-<li>每天免费获得一定数量的带宽（基于质押的 TRX 数量）。</li>
+<li><strong>每天免费获得一定数量的带宽（基于质押的 TRX 数量</strong>）。</li>
 <li>如果带宽不足，可以用 TRX 支付交易费用。</li>
 </ul>
 </li>
 <li><p>费用计算</p>
-<p>：</p>
 <ul>
-<li>每笔交易消耗固定的带宽点数（例如，TRX 转账消耗约 200 带宽）。</li>
-<li>如果带宽不足，每字节交易数据消耗 0.002 TRX。</li>
+<li><strong>每笔交易消耗固定的带宽点数（例如，TRX 转账消耗约 200 带宽）</strong>。</li>
 </ul>
+</li>
+<li><p>如果带宽不足，每字节交易数据消耗 0.002 TRX。</p>
 </li>
 </ul>
 <hr>
 <h3 id="3-能量（Energy）"><a href="#3-能量（Energy）" class="headerlink" title="3. 能量（Energy）"></a>3. <strong>能量（Energy）</strong></h3><ul>
 <li><p><strong>用途</strong>：用于执行智能合约（如 TRC-20 代币转账、调用智能合约）。</p>
 </li>
-<li><p>获取方式</p>
-<p>：</p>
+<li><p>获取方式：</p>
 <ul>
 <li>通过质押 TRX 获得能量。</li>
 <li>如果能量不足，可以用 TRX 支付交易费用。</li>
 </ul>
 </li>
-<li><p>费用计算</p>
-<p>：</p>
+<li><p>费用计算：</p>
 <ul>
 <li>能量消耗取决于智能合约的复杂性和计算资源需求。</li>
-<li>如果能量不足，每单位能量消耗 0.00001 TRX。</li>
 </ul>
+</li>
+<li><p>如果能量不足，每单位能量消耗 0.00001 TRX。</p>
 </li>
 </ul>
 <h3 id="4-TRX-支付"><a href="#4-TRX-支付" class="headerlink" title="4. TRX 支付"></a>4. <strong>TRX 支付</strong></h3><p>如果用户没有足够的带宽或能量，可以直接用 TRX 支付交易费用。费用会根据交易类型和资源消耗动态计算。</p>
@@ -471,6 +469,14 @@
 <hr>
 <h3 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. <strong>总结</strong></h3><p>Tron 的矿工费形式以带宽和能量为核心，用户可以通过质押 TRX 获取资源，或者直接支付 TRX。这种设计使得 Tron 的交易费用更低、更灵活，适合高频交易和去中心化应用（DApps）的运行。</p>
 <p>如果你有更多关于 Tron 的问题，欢迎继续提问！</p>
+<h3 id="9-交易的生命周期"><a href="#9-交易的生命周期" class="headerlink" title="9. 交易的生命周期"></a>9. <strong>交易的生命周期</strong></h3><p>流程：构建–&gt;签名–&gt;广播–&gt;确认</p>
+<p>生命周期：</p>
+<ul>
+<li>交易的创建和签名</li>
+<li>广播道Tron网络中，经过节点验证和执行，收录进一个交易缓存池中</li>
+<li>出块节点按照交易放入的顺序，逐个从交易缓存池中取出交易，打包成一个新区块，然后将新区块广播到TRON网络。</li>
+<li>交易会被“确认”。交易是否被确认，取决于包含该交易的区块是否被确认。TRON的区块确认机制是，一个区块产生后，19个不同的超级节点会根据这个区块产生后续的区块，然后这个区块就被确认了。</li>
+</ul>
 <h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><p><strong>节点构建和使用文档</strong></p>
 <p><a target="_blank" rel="noopener" href="https://docs.vite.org/vite-docs/tutorial/node/install.html">https://docs.vite.org/vite-docs/tutorial/node/install.html</a></p>
 <p><strong>RPC文档</strong></p>
