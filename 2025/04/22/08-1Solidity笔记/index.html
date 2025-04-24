@@ -24,7 +24,7 @@
 <meta property="og:description" content="Solidity中的变量类型 **值类型(Value Type)**：包括布尔型，整数型等等，这类变量赋值时候直接传递数值。 **引用类型(Reference Type)**：包括数组和结构体，这类变量占空间大，赋值时候直接传递地址（类似指针）。 映射类型(Mapping Type): Solidity中存储键值对的数据结构，可以理解为哈希表  我们将仅介绍常用类型，不常用的类型不会涉及，本篇将介">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-22T02:04:31.000Z">
-<meta property="article:modified_time" content="2025-04-22T09:24:07.024Z">
+<meta property="article:modified_time" content="2025-04-24T10:41:22.035Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          3.7k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          16 分钟
+          31 分钟
         
       </span>
     
@@ -320,7 +320,7 @@
 <li><strong>映射类型(Mapping Type)</strong>: Solidity中存储键值对的数据结构，可以理解为哈希表</li>
 </ol>
 <p>我们将仅介绍常用类型，不常用的类型不会涉及，本篇将介绍值类型。</p>
-<h2 id="值类型"><a href="#值类型" class="headerlink" title="值类型"></a>值类型</h2><h3 id="1-布尔型"><a href="#1-布尔型" class="headerlink" title="1. 布尔型"></a>1. 布尔型</h3><p>布尔型是二值变量，取值为 <code>true</code> 或 <code>false</code>。</p>
+<h1 id="2-值类型"><a href="#2-值类型" class="headerlink" title="2. 值类型"></a>2. 值类型</h1><h3 id="1-布尔型"><a href="#1-布尔型" class="headerlink" title="1. 布尔型"></a>1. 布尔型</h3><p>布尔型是二值变量，取值为 <code>true</code> 或 <code>false</code>。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 布尔值<br>bool public _bool = true; <br>//类型 公有 值名称=值<br></code></pre></td></tr></table></figure>
 
 
@@ -383,7 +383,7 @@
 
 
 <p><strong><code>enum</code> 是一个比较冷门的数据类型，几乎没什么人用。</strong></p>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>我们先看一下 Solidity 中函数的形式:</p>
+<h1 id="3-函数"><a href="#3-函数" class="headerlink" title="3. 函数"></a>3. 函数</h1><h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>我们先看一下 Solidity 中函数的形式:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function &lt;function name&gt;([parameter types[, ...]]) &#123;internal|external|public|private&#125; [pure|view|payable] [virtual|override] [&lt;modifiers&gt;]<br>[returns (&lt;return types&gt;)]&#123; &lt;function body&gt; &#125;<br></code></pre></td></tr></table></figure>
 
 
@@ -434,6 +434,81 @@
 <li><code>view</code>，“看”，这里可以理解为“看客”。<code>view</code>函数能读取但也不能写入状态变量。类似马里奥，能看到碧琪公主，但终究是看客，不能入洞房。</li>
 <li>非 <code>pure</code> 或 <code>view</code> 的函数既可以读取也可以写入状态变量。类似马里奥里的 <code>boss</code>，可以对碧琪公主为所欲为🐶。</li>
 </ul>
+<h1 id="4-函数输出"><a href="#4-函数输出" class="headerlink" title="4. 函数输出"></a>4. 函数输出</h1><h2 id="返回值：return-和-returns"><a href="#返回值：return-和-returns" class="headerlink" title="返回值：return 和 returns"></a>返回值：return 和 returns</h2><p>在函数定义行中有两个关键字<code>return</code>和<code>returns</code>，他们区别是：</p>
+<ul>
+<li><code>return</code>跟在函数名后面，用于声明返回的变量类型以及变量名称</li>
+<li><code>return</code>:用于函数主题中，返回指定的变量</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 返回多个变量<br>function returnMultiple() public pure returns(uint256, bool, uint256[3] memory)&#123;<br>    return(1, true, [uint256(1),2,5]);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>在上述代码中，我们利用 <code>returns</code> 关键字声明了有多个返回值的 <code>returnMultiple()</code> 函数，然后我们在函数主体中使用 <code>return(1, true, [uint256(1),2,5])</code> 确定了返回值。</p>
+<p>这里<code>uint256[3]</code>声明了一个长度为<code>3</code>且类型为<code>uint256</code>的数组作为返回值。因为<code>[1,2,3]</code>会默认为<code>uint8(3)</code>，因此<code>[uint256(1),2,5]</code>中首个元素必须强转</p>
+<h2 id="命名式返回"><a href="#命名式返回" class="headerlink" title="命名式返回"></a>命名式返回</h2><p>我们可以在 <code>returns</code> 中标明返回变量的名称。Solidity 会初始化这些变量，并且自动返回这些变量的值，无需使用 <code>return</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 命名式返回<br>function returnNamed() public pure returns(uint256 _number, bool _bool, uint256[3] memory _array)&#123;<br>    _number = 2;<br>    _bool = false;<br>    _array = [uint256(3),2,1];<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>在上述代码中，我们用 <code>returns(uint256 _number, bool _bool, uint256[3] memory _array)</code> 声明了返回变量类型以及变量名。这样，在主体中只需为变量 <code>_number</code>、<code>_bool</code>和<code>_array</code> 赋值，即可自动返回。</p>
+<p>当然，你也可以在命名式返回中用 <code>return</code> 来返回变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 命名式返回，依然支持return<br>function returnNamed2() public pure returns(uint256 _number, bool _bool, uint256[3] memory _array)&#123;<br>    return(1, true, [uint256(1),2,5]);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="解构式赋值"><a href="#解构式赋值" class="headerlink" title="解构式赋值"></a>解构式赋值</h2><p>Solidity 支持使用解构式赋值规则来读取函数的全部或部分返回值。</p>
+<ul>
+<li><p>读取所有返回值：声明变量，然后将要赋值的变量用<code>,</code>隔开，按顺序排列。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">uint256 _number;<br>bool _bool;<br>uint256[3] memory _array;<br>(_number, _bool, _array) = returnNamed();<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>读取部分返回值：声明要读取的返回值对应的变量，不读取的留空。在下面的代码中，我们只读取<code>_bool</code>，而不读取返回的<code>_number</code>和<code>_array</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">(, _bool2, ) = returnNamed();<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p>如果两个币种发生较大汇率的变化就会有损失</p>
+<h1 id="5-变量数据存储和作用域"><a href="#5-变量数据存储和作用域" class="headerlink" title="5. 变量数据存储和作用域"></a>5. 变量数据存储和作用域</h1><p>引用类型(Reference Type) ：包括数组(array)和结构体(struct)，由于这类变量的类型比较复杂且占用空间比较大，所以使用的时候必须要声明数据所存储的位置，</p>
+<h2 id="数据位置"><a href="#数据位置" class="headerlink" title="数据位置"></a>数据位置</h2><p>数据的位置包含三种类型<code>storage</code>,<code>memory</code>,<code>calldata</code></p>
+<ul>
+<li><p><code>storage</code>：合约里的状态变量默认是storage，存储在链上的，类似计算机的硬盘—一种持久化存储，由链帮你持久化，所以影响了链，所以消耗的gas比较大</p>
+</li>
+<li><p><code>memory</code>:函数里的参数和临时使用的变量一般用memory，见名知意，内存，存储在内存中的，不上链，尤其是当返回数据类型是<strong>变长</strong>的情况下，必须加memory修饰，例如：string,bytes，array和自定义结构，</p>
+</li>
+<li><p><code>calldata</code>：和<code>memory</code>类似，也是储存在内存中，不上链，不同点是不能修寒这个变量，一般用于函数的参数，入参进来后不会被改变：如</p>
+</li>
+<li><pre><code class="solidity">function fCallData(uint[] calldata _x)public pure returns (uint[] calldata) &#123;
+        // _x[0]=0; // 当你修改的时候，就会报错TypeError: Calldata arrays are read-only.
+        return (_x);
+    &#125;
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><br><span class="hljs-meta">### 数据位置和赋值规则</span><br><br>赋值的本质是创建引用指向本土，因此修改本体或者是修改引用，变化可以被同步<br><br>- `storage`(合约的状态变量)赋值给本地`storage`（函数里的）时候，会创建引用，改变新变量会影响原来的变量。例如<br><br>```solidity<br>    <span class="hljs-built_in">uint</span>[] x =[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];<br>    <span class="hljs-function">function <span class="hljs-title">sStorage</span>() <span class="hljs-keyword">public</span></span> &#123;<br>        <span class="hljs-built_in">uint</span>[] storage xStorage = x; <span class="hljs-comment">// xStorage是uint[]类型，位置是storage，引用了x，当修改xStorage的时候，x也会被修改，</span><br>        xStorage[<span class="hljs-number">0</span>]=<span class="hljs-number">101</span>;<span class="hljs-comment">//当我们调用了Sstorage方法的时候就xStorage以及x的第1个元素改成100，</span><br>        <span class="hljs-comment">// 在debug的时候可以看到x的第1个元素一开是1 ，后面变成了100</span><br>        <br>    &#125;<br>    <span class="hljs-comment">// 为了更方便观察。写了一个getX方法来查询x的值，当调用了sStorage后x的第一个元素就变成了101了；</span><br>    <span class="hljs-function">function <span class="hljs-title">getX</span>() <span class="hljs-keyword">public</span> view <span class="hljs-title">returns</span> (<span class="hljs-params"><span class="hljs-built_in">uint</span>[] memory</span>)</span>&#123;<br>        <span class="hljs-keyword">return</span> (x);<br>    &#125;<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><p><code>memory</code>赋值给<code>memory</code>，会创建引用，改变新变量会影响原变量。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity"><br>uint[] y  =[1,2,3]; // 在函数之外定义的变量，默认就是stroage类型的，<br><br><br>function yMemory() public view &#123;<br>    uint[] memory ymemory = y; // y是storage类的，ymemory是引用了y，所以修改ymemory的时候不会修改到y<br>    ymemory[0]=101;<br>    <br>&#125;<br>// 我们调用getY的时候就会发现，其实yMemory方法并不能修改y的值，这就是引用<br>function getY() public view returns (uint[] memory)&#123;<br>    return (y);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>其他情况下，赋值创建的是本体的副本，即对二者之一的修改，并不会同步到另一方。这有时会涉及到开发中的问题，比如从<code>storage</code>中读取数据，赋值给<code>memory</code>，然后修改<code>memory</code>的数据，但如果没有将<code>memory</code>的数据赋值回<code>storage</code>，那么<code>storage</code>的数据是不会改变的。上面的例子就是指的其他情况，是storage 类型被memory类型改变，实际是改变不成功的</li>
+<li>还有一种情况就是memory类型的被memory类型的修改，这个暂时还不知道怎么打印</li>
+</ul>
+<h2 id="变量的作用域"><a href="#变量的作用域" class="headerlink" title="变量的作用域"></a>变量的作用域</h2><p>前面收的storage和memory讨论的是变量存储的位置，以及引用的方式，就像理解指针和引用一样，下面来学变量的作用域，所谓所用域就是指这个变量在哪里可以用它</p>
+<p><code>Solidity</code>中变量按作用域划分有三种，分别是状态变量（state variable），局部变量（local variable）和全局变量(global variable)</p>
+<h3 id="1-状态变量"><a href="#1-状态变量" class="headerlink" title="1. 状态变量"></a>1. 状态变量</h3><p>状态变量是数据存储在链上的变量，所有合约内函数都可以访问，<code>gas</code>消耗高。状态变量在合约内、函数外声明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Variables &#123;<br>     // 2.变量的作用域<br>    // 2.1 状态变量： 链上的变量：写在合约里面函数外面的变量，就是状态变量，在所有合约内函数都可以访问，同样gas的消耗也高<br>    uint public a=1;<br>    uint public b;<br>    string public z;// 这些变量都是状态变量，同时，这些变量会自带有get方法去查看他们的值，（数组没有自带get）<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>我们可以在函数里更改状态变量的值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function foo() external&#123;<br>    // 可以在函数里更改状态变量的值<br>    x = 5;<br>    y = 2;<br>    z = &quot;0xAA&quot;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-局部变量"><a href="#2-局部变量" class="headerlink" title="2. 局部变量"></a>2. 局部变量</h3><p>局部变量是仅在函数执行过程中有效的变量，函数退出后，变量无效。局部变量的数据存储在内存里，不上链，<code>gas</code>低。局部变量在函数内声明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity"> // 2.2 局部变量，这个就很好理解了，就是在函数内部定义的变量，只作用的函数内，出去了就没用啦<br>function bar() external pure returns(uint)&#123;<br>    uint xx = 1;<br>    uint yy = 3;<br>    uint zz = xx + yy;<br>    return(zz);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-全局变量"><a href="#3-全局变量" class="headerlink" title="3. 全局变量"></a>3. 全局变量</h3><p>全局变量是全局范围工作的变量，都是<code>solidity</code>预留关键字。他们可以在函数内不声明直接使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 2.3 全局变量，这里的全局变量和py不同，这里指的是solidity预留关键字的变量，他们可以在函数内不声明直接使用<br>   function global()external view returns(address,uint,bytes32,bytes memory)  &#123;<br>       address sender=msg.sender; // 发送者的地址，猜测应该是调用这个合约的人的地址,address是一种类型<br>       uint blockNum = block.number; // 当前区块高度？<br>       bytes32 bHash = blockhash(blockNum - 1); // 获取区块哈希<br>       bytes memory data=msg.data; //这个没用过 ,byte是类型，memory是位置<br>       return (sender,blockNum,bHash,data);<br>   &#125;<br></code></pre></td></tr></table></figure>
 
                 
               </div>
