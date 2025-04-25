@@ -24,7 +24,7 @@
 <meta property="og:description" content="Solidity中的变量类型 **值类型(Value Type)**：包括布尔型，整数型等等，这类变量赋值时候直接传递数值。 **引用类型(Reference Type)**：包括数组和结构体，这类变量占空间大，赋值时候直接传递地址（类似指针）。 映射类型(Mapping Type): Solidity中存储键值对的数据结构，可以理解为哈希表  我们将仅介绍常用类型，不常用的类型不会涉及，本篇将介">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-22T02:04:31.000Z">
-<meta property="article:modified_time" content="2025-04-24T10:41:22.035Z">
+<meta property="article:modified_time" content="2025-04-25T09:55:39.786Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.7k 字
+          3.9k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          31 分钟
+          33 分钟
         
       </span>
     
@@ -509,6 +509,22 @@
 
 <h3 id="3-全局变量"><a href="#3-全局变量" class="headerlink" title="3. 全局变量"></a>3. 全局变量</h3><p>全局变量是全局范围工作的变量，都是<code>solidity</code>预留关键字。他们可以在函数内不声明直接使用：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 2.3 全局变量，这里的全局变量和py不同，这里指的是solidity预留关键字的变量，他们可以在函数内不声明直接使用<br>   function global()external view returns(address,uint,bytes32,bytes memory)  &#123;<br>       address sender=msg.sender; // 发送者的地址，猜测应该是调用这个合约的人的地址,address是一种类型<br>       uint blockNum = block.number; // 当前区块高度？<br>       bytes32 bHash = blockhash(blockNum - 1); // 获取区块哈希<br>       bytes memory data=msg.data; //这个没用过 ,byte是类型，memory是位置<br>       return (sender,blockNum,bHash,data);<br>   &#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面是一些常用的全局变量，更完整的列表请看这个<a target="_blank" rel="noopener" href="https://learnblockchain.cn/docs/solidity/units-and-global-variables.html#special-variables-and-functions">链接</a>：</p>
+<ul>
+<li><code>blockhash(uint blockNumber)</code>: (<code>bytes32</code>) 给定区块的哈希值 – 只适用于最近的256个区块, 不包含当前区块。</li>
+<li><code>block.coinbase</code>: (<code>address payable</code>) 当前区块矿工的地址</li>
+<li><code>block.gaslimit</code>: (<code>uint</code>) 当前区块的gaslimit</li>
+<li><code>block.number</code>: (<code>uint</code>) 当前区块的number</li>
+<li><code>block.timestamp</code>: (<code>uint</code>) 当前区块的时间戳，为unix纪元以来的秒</li>
+<li><code>gasleft()</code>: (<code>uint256</code>) 剩余 gas</li>
+<li><code>msg.data</code>: (<code>bytes calldata</code>) 完整call data</li>
+<li><code>msg.sender</code>: (<code>address payable</code>) 消息发送者 (当前 caller)</li>
+<li><code>msg.sig</code>: (<code>bytes4</code>) calldata的前四个字节 (function identifier)</li>
+<li><code>msg.value</code>: (<code>uint</code>) 当前交易发送的 <code>wei</code> 值</li>
+<li><code>block.blobbasefee</code>: (<code>uint</code>) 当前区块的blob基础费用。这是Cancun升级新增的全局变量。</li>
+<li><code>blobhash(uint index)</code>: (<code>bytes32</code>) 返回跟当前交易关联的第 <code>index</code> 个blob的版本化哈希（第一个字节为版本号，当前为<code>0x01</code>，后面接KZG承诺的SHA256哈希的最后31个字节）。若当前交易不包含blob，则返回空字节。这是Cancun升级新增的全局变量。</li>
+</ul>
 
                 
               </div>
