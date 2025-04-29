@@ -16,15 +16,15 @@
   <meta name="author" content="Wangxiaowang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环">
+    <meta name="description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环 三元运算符 插入排序  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061">
 <meta property="og:type" content="article">
 <meta property="og:title" content="08-2Solidity笔记之二">
 <meta property="og:url" content="http://example.com/2025/04/28/08-2Solidity%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/index.html">
 <meta property="og:site_name" content="Wang">
-<meta property="og:description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环">
+<meta property="og:description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环 三元运算符 插入排序  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-28T09:46:10.000Z">
-<meta property="article:modified_time" content="2025-04-28T09:55:26.414Z">
+<meta property="article:modified_time" content="2025-04-29T08:27:10.504Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          29 字
+          726 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          1 分钟
+          7 分钟
         
       </span>
     
@@ -320,7 +320,25 @@
 <li>for循环</li>
 <li>while循环</li>
 <li>do-while循环</li>
+<li>三元运算符</li>
+<li>插入排序</li>
 </ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 1 if-else<br> function ifElseTest(uint256 _number)public pure returns (bool) &#123;<br>     if(_number==0)&#123;<br>         return (true);<br>     &#125;else &#123;<br>         return (false);<br>     &#125;<br> &#125;<br> //2 for 循环<br> function forLoopTest()public pure  returns (uint256)&#123;<br>     uint sum =0;<br>     for(uint i=0;i&lt;10;i++)&#123;<br>         sum+=i;<br>     &#125;<br>     return (sum);<br> &#125;<br> function forLoopTest2()public pure returns(uint256)&#123;<br>     uint sum=0;// 循环初始<br>     for(uint i=0;i&lt;10;i++)&#123;<br>         sum+=i;<br>     &#125;<br>     return(sum);<br> &#125;<br> //3 while 循环<br> function whileTest()public pure returns(uint256)&#123;<br>     uint sum =0;// 初始变量<br>     uint i=1;<br>     while(i&lt;10)&#123;<br>         sum+=i;<br>         i++;<br>     &#125;<br>     return(sum);<br> &#125;<br> //4 do-while循环<br> function doWhileTest()public pure  returns(uint256)&#123;<br>     uint sum=0;<br>     uint i =1;<br>     do&#123;<br>         sum+=i;<br>         i++;<br>     &#125;while(<br>         i&lt;10<br>     );<br>     return(sum);<br> &#125;<br> //5 三元运算符，这个py也有，可能会碰到比较多<br> function ternaryTest(uint256 x ,uint256 y )public pure  returns(uint256)&#123;<br><br>     return x&gt;=y?x:y;//这里猜测是返回x或者y，如果x&gt;=y就返回x，否者就返回y，冒号后面是否者，前面是默认<br>     // 问号前面是布尔表达式，做判断的<br>     // 冒号前面是期望返回的，就是布尔表达式是ture就返回冒号前面的<br>     // 布尔表达式是否就返回冒号后面的<br> &#125;<br> // 还有continue 和 break <br> //6 写一个插入排序<br> function InsertionSortTest(uint[] memory arr)public pure  returns(uint[] memory)&#123;<br>     for(uint i=1;i&lt;arr.length;i++)&#123;<br>         uint key=arr[i];<br>         uint j=i; <br>         while((j&gt;=1)&amp;&amp;(key&lt;arr[j-1]))&#123;<br>             arr[j+1]=arr[j];<br>             j--;<br>         &#125;<br>         arr[j]=key;<br>     &#125;<br>     return(arr);<br> &#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="11-构造函数和修饰器"><a href="#11-构造函数和修饰器" class="headerlink" title="11. 构造函数和修饰器"></a>11. 构造函数和修饰器</h1><h2 id="11-1构造函数"><a href="#11-1构造函数" class="headerlink" title="11.1构造函数"></a>11.1构造函数</h2><p>构造函数每个合约只可以定义一个，在部署合约的时候运行一次，自动运行的，且是第一个运行的，</p>
+<p>构造函数一般用来初始化变量用，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">address owner;<br>// 1、构造函数 一来就会运行这个方法的,你在部署合约的时候就要传入参数才能部署<br>constructor(address initialOwner) &#123;<br>    owner = initialOwner;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="11-2-modifier-装饰器，学过py的比较好理解"><a href="#11-2-modifier-装饰器，学过py的比较好理解" class="headerlink" title="11.2 modifier 装饰器，学过py的比较好理解"></a>11.2 modifier 装饰器，学过py的比较好理解</h2><p>就是对函数进行增强用的，在执行函数之前或者之后 运行，也可以改变其运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">//2、modifier 装饰器，学过py的比较好理解<br>// 定义一个modifier<br>modifier onlyOwner&#123;<br>    require(msg.sender==owner);// 在判断如果等于就走，如果不等于就会报错的<br>    _; // 加这一行是表示继续执行被装饰的函数<br>&#125;<br>// 定义好了，开始使用<br>function changeOwner(address _newOwner)external onlyOwner&#123;<br>    owner=_newOwner;<br>    // 调用这个方法的时候如果和owner地址不一致就会报错<br>    //transact to Owner2.changeOwner errored: Error encoding arguments: Error: invalid address (argument=&quot;address&quot;, value=&quot;0xa6f9dae10000000000000000000000005b38da6a701c568545dcfcb03fcb875f56beddc4&quot;, code=INVALID_ARGUMENT, version=address/5.7.0) (argument=null, value=&quot;0xa6f9dae10000000000000000000000005b38da6a701c568545dcfcb03fcb875f56beddc4&quot;, code=INVALID_ARGUMENT, version=abi/5.7.0)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h1 id="12-事件-event"><a href="#12-事件-event" class="headerlink" title="12. 事件 event"></a>12. 事件 event</h1><p>事件是干嘛用的？事件<code>event</code>是<code>EVM</code>上日志的抽象，它具备两个特点</p>
+<ul>
+<li>响应：程序可以通过RPC接口订阅和监听这些事件，并在前端做响应—暂时还不知道</li>
+<li>经济：是evm上比较经济的存储数据的方式，每个大概消耗2000 gas；相比之下，链上存储一个新变量（状态）变量</li>
+</ul>
 
                 
               </div>
