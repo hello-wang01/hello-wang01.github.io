@@ -24,7 +24,7 @@
 <meta property="og:description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环 三元运算符 插入排序  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-28T09:46:10.000Z">
-<meta property="article:modified_time" content="2025-04-29T08:27:10.504Z">
+<meta property="article:modified_time" content="2025-04-30T11:52:36.267Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          726 字
+          3.8k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          7 分钟
+          32 分钟
         
       </span>
     
@@ -337,8 +337,113 @@
 <h1 id="12-事件-event"><a href="#12-事件-event" class="headerlink" title="12. 事件 event"></a>12. 事件 event</h1><p>事件是干嘛用的？事件<code>event</code>是<code>EVM</code>上日志的抽象，它具备两个特点</p>
 <ul>
 <li>响应：程序可以通过RPC接口订阅和监听这些事件，并在前端做响应—暂时还不知道</li>
-<li>经济：是evm上比较经济的存储数据的方式，每个大概消耗2000 gas；相比之下，链上存储一个新变量（状态）变量</li>
+<li>经济：是evm上比较经济的存储数据的方式，每个大概消耗<code>2,000 </code>gas；相比之下，链上存储一个新变量（状态）变量至少需要<code>20,000</code>gas</li>
 </ul>
+<h2 id="声明事件"><a href="#声明事件" class="headerlink" title="声明事件"></a>声明事件</h2><p>声明时以<code>event</code>开头括号里面写好时间需要记录的变量类型和变量名字，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">event Transfer(address indexed from,address indexed to,uint256 value);//这个就是ERC20合约的转账事件<br></code></pre></td></tr></table></figure>
+
+<p>   可以看到，Transfer事件共记录了3个变量from，to和value，分别对应代币的转账地址，接收地址和转账数量，其中from和to前面带有indexed关键字，他们会保存在以太坊虚拟机日志的topics中，方便之后检索。</p>
+<h2 id="释放事件"><a href="#释放事件" class="headerlink" title="释放事件"></a>释放事件</h2><p>我们可以在函数里释放事件。在下面的例子中，每次用<code>_transfer()</code>函数进行转账操作的时候，都会释放<code>Transfer</code>事件，并记录相应的变量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 2、释放事件<br>function _transfer(<br>    address from,<br>    address to,<br>    uint256 amount<br>)external &#123;<br>    // _balances[from]=10000000; //给转账地址转一些初始化代币<br>    // _balances[from]-=amount; //给转账地址减掉转账数量<br>    // _balances[to]+=amount;// 给接收地址加上对应的金额<br><br>    // // 释放事件<br>    // emit Transfer(from, to, amount);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="EVM日志-Log—-后面再回来学习"><a href="#EVM日志-Log—-后面再回来学习" class="headerlink" title="EVM日志 Log—-后面再回来学习"></a>EVM日志 <code>Log</code>—-后面再回来学习</h2><p>以太坊虚拟机（EVM）用日志<code>Log</code>来存储<code>Solidity</code>事件，每条日志记录都包含主题<code>topics</code>和数据<code>data</code>两部分。</p>
+<h3 id="主题-topics"><a href="#主题-topics" class="headerlink" title="主题 topics"></a>主题 <code>topics</code></h3><p>日志的第一部分是主题数组，用于描述事件，长度不能超过<code>4</code>。它的第一个元素是事件的签名（哈希）。对于上面的<code>Transfer</code>事件，它的事件哈希就是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">keccak256</span><span class="hljs-params">(<span class="hljs-string">&quot;Transfer(address,address,uint256)&quot;</span>)</span></span><br><br><span class="hljs-comment">//0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>除了事件哈希，主题还可以包含至多<code>3</code>个<code>indexed</code>参数，也就是<code>Transfer</code>事件中的<code>from</code>和<code>to</code>。</p>
+<p><code>indexed</code>标记的参数可以理解为检索事件的索引“键”，方便之后搜索。每个 <code>indexed</code> 参数的大小为固定的256比特，如果参数太大了（比如字符串），就会自动计算哈希存储在主题中。</p>
+<p>这里其实会引入一个新的问题，根据Solidity的<a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.27/abi-spec.html#encoding-of-indexed-event-parameters">官方文档</a>, 对于非值类型的参数（如arrays, bytes, strings）, Solidity不会直接存储，而是会将<code>Keccak-256</code>哈希存储在主题中，从而导致数据信息的丢失。这对于某些依赖于链上事件的DAPP（跨链，用户注册等等）来说，可能会导致事件检索困难，需要解析哈希值。</p>
+<h3 id="数据-data"><a href="#数据-data" class="headerlink" title="数据 data"></a>数据 <code>data</code></h3><p>事件中不带 <code>indexed</code>的参数会被存储在 <code>data</code> 部分中，可以理解为事件的“值”。<code>data</code> 部分的变量不能被直接检索，但可以存储任意大小的数据。因此一般 <code>data</code> 部分可以用来存储复杂的数据结构，例如数组和字符串等等，因为这些数据超过了256比特，即使存储在事件的 <code>topics</code> 部分中，也是以哈希的方式存储。另外，<code>data</code> 部分的变量在存储上消耗的gas相比于 <code>topics</code> 更少。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs json"> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;logIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x1&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;blockNumber&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x16&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;blockHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5d06b9024fa1761bfaef0357ddebbea116c548a4cdb15c00a433095b8a177092&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;transactionHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x1d0698d8ced934ec7d2d14acfe527f8986e8a8a84a5383c629f946ec6410c97c&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;transactionIndex&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;address&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x5e17b14ADd6c386305A32928F985b29bbA34Eff5&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e68656c6c6f204261626120686970000000000000000000000000000000000000&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;topics&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-string">&quot;0xcf34ef537ac33ee1ac626ca1587a0a7e8e51561e5514f8cb36afa1c5102b3bab&quot;</span><br>    <span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-comment">// data是十六进制的，需要转utf8才能读，</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="13-继承"><a href="#13-继承" class="headerlink" title="13. 继承"></a>13. 继承</h1><p>面向对象编程，绕不过继承，solidity有3种</p>
+<p>我们可以把一个合约看成是py的一个类，a合约继承b合约</p>
+<h3 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h3><ul>
+<li><code>virtual</code>: 父合约中的函数，如果希望子合约重写，需要加上<code>virtual</code>关键字。</li>
+<li><code>override</code>：子合约重写了父合约中的函数，需要加上<code>override</code>关键字。</li>
+</ul>
+<p><strong>注意</strong>：用<code>override</code>修饰<code>public</code>变量，会重写与变量同名的<code>getter</code>函数，例如：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">mapping(address =&gt; <span class="hljs-built_in">uint</span>256) <span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> balanceOf;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="简单继承"><a href="#简单继承" class="headerlink" title="简单继承"></a>简单继承</h3><p>我们先写一个简单的爷爷合约<code>Yeye</code>，里面包含1个<code>Log</code>事件和3个<code>function</code>: <code>hip()</code>, <code>pop()</code>, <code>yeye()</code>，输出都是”Yeye”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Yeye &#123;<br>    event Log(string msg);<br><br>    // 定义3个function: hip(), pop(), yeye()，Log值为Yeye。<br>    function hip() public virtual&#123;<br>        emit Log(&quot;Yeye&quot;);<br>    &#125;<br><br>    function pop() public virtual&#123;<br>        emit Log(&quot;Yeye&quot;);<br>    &#125;<br><br>    function yeye() public virtual &#123;<br>        emit Log(&quot;Yeye&quot;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>我们再定义一个爸爸合约<code>Baba</code>，让他继承<code>Yeye</code>合约，语法就是<code>contract Baba is Yeye</code>，非常直观。在<code>Baba</code>合约里，我们重写一下<code>hip()</code>和<code>pop()</code>这两个函数，加上<code>override</code>关键字，并将他们的输出改为<code>”Baba”</code>；并且加一个新的函数<code>baba</code>，输出也是<code>”Baba”</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Baba is Yeye&#123;<br>    // 继承两个function: hip()和pop()，输出改为Baba。<br>    function hip() public virtual override&#123;<br>        emit Log(&quot;Baba&quot;);<br>    &#125;<br><br>    function pop() public virtual override&#123;<br>        emit Log(&quot;Baba&quot;);<br>    &#125;<br><br>    function baba() public virtual&#123;<br>        emit Log(&quot;Baba&quot;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>我们部署合约，可以看到<code>Baba</code>合约里有4个函数，其中<code>hip()</code>和<code>pop()</code>的输出被成功改写成<code>”Baba”</code>，而继承来的<code>yeye()</code>的输出仍然是<code>”Yeye”</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Erzi is Yeye, Baba&#123;<br>    // 继承两个function: hip()和pop()，输出改为Erzi。<br>    function hip() public virtual override(Yeye, Baba)&#123;<br>        emit Log(&quot;hello Erzi&quot;);<br>    &#125;<br>    // 所以virtual表示的是可以被重写<br>    // override 表示的是我这个方法是已经被重写过的<br><br>    // 父合约中某个函数标记为 virtual，表示这个函数允许被子合约重写（override），但子合约不一定必须重写它，除非有特殊情况（比如接口或抽象合约要求实现）。<br>    // 子合约如果要重写父合约的 virtual 函数，必须显式使用 override 关键字，告诉编译器这是重写。<br>    // 如果父合约中某个函数已经使用了 override（说明它本身是重写了更上级父合约的函数），那么子合约只有在需要改变该函数行为时才必须重写它，否则可以直接继承父合约的实现。<br>    function pop() public virtual override(Yeye, Baba) &#123;<br>        emit Log(&quot;hello Erzi&quot;);<br>    &#125;<br><br>    function callParent() public&#123;<br>        Yeye.pop(); //掉用父合约方法不能用 Yeye.pop() 直接调用，因为 Yeye 是合约类型，不是实例。<br>        // Yeye是类不是实力化对象<br>    &#125;<br><br>    function callParentSuper() public&#123;<br>        super.pop(); // 调用父合约方法<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="调用父合约的函数"><a href="#调用父合约的函数" class="headerlink" title="调用父合约的函数"></a>调用父合约的函数</h3><p>子合约有两种方式调用父合约的函数，直接调用和利用<code>super</code>关键字。</p>
+<ol>
+<li><p>直接调用：子合约可以直接用<code>父合约名.函数名()</code>的方式来调用父合约函数，例如<code>Yeye.pop()</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function callParent() public&#123;<br>    Yeye.pop();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>super</code>关键字：子合约可以利用<code>super.函数名()</code>来调用最近的父合约函数。<code>Solidity</code>继承关系按声明时从右到左的顺序是：<code>contract Erzi is Yeye, Baba</code>，那么<code>Baba</code>是最近的父合约，<code>super.pop()</code>将调用<code>Baba.pop()</code>而不是<code>Yeye.pop()</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function callParentSuper() public&#123;<br>    // 将调用最近的父合约函数，Baba.pop()<br>    super.pop();<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="钻石继承"><a href="#钻石继承" class="headerlink" title="钻石继承"></a>钻石继承</h3><p>….类似python中的多继承里面的经典类（Classic Classes）和新式类（New Style Classes）的区分</p>
+<p>就是继承顺序的概念</p>
+<h1 id="14-抽象合约和接口"><a href="#14-抽象合约和接口" class="headerlink" title="14. 抽象合约和接口"></a>14. 抽象合约和接口</h1><h2 id="抽象合约"><a href="#抽象合约" class="headerlink" title="抽象合约"></a>抽象合约</h2><p>如果某个智能合约里面至少有一个未实现的函数，则这个合约就是抽象合约，用<code>abstract</code>标识，另外这个未实现的函数需要加<code>virtual</code>标识以便子合约重写该函数，</p>
+<p>当我们还没有想好这个函数怎么写的时候可以使用抽象合约</p>
+<p>当我们需要子合约都有这个函数且都重写是可以使用抽象合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">abstract contract InsertionSort &#123;<br>    //TypeError: Contract &quot;InsertionSort&quot; should be marked as abstract.<br>    //类型错误：合同“InsertionSort”应标记为抽象<br>    // 没有函数体&#123;&#125;的<br>    function insertionSort(uint[] memory a)public pure virtual returns(uint[] memory); <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>接口就类似于抽象合约，但他不实现任何功能，接口的规则</p>
+<ol>
+<li>只能<strong>声明</strong>函数，不能定义函数体，也就是说接口中的函数都是抽象的，没有实现代码</li>
+<li>所有函数默认都是<code>external</code>和<code>virtual</code>,external不需要显式写，接口函数默认都是可外部调用</li>
+<li>不能定义构造函数、状态变量、修饰符、枚举等–接口只声明函数，只声明</li>
+<li>接口不能继承普通合约，但可以继承其他接口，&#x3D;&#x3D;&#x3D;接口之间允许继承，实现接口的组合，</li>
+<li>继承接口的非抽象合约必须实现接口定义的所有功能</li>
+</ol>
+<blockquote>
+<p>为什么要用Interface接口？</p>
+<p>1、规范合约的行为，我声明一组必须实现的函数，来确保合约实现统一的功能，比如说我声明（吃饭、睡觉、玩耍三个函数）那如果其他合约（狗、猫）继承我这个接口，就必须要实现这三个函数，所以说是一种约束</p>
+<p>2、方便合约之间的交互，通过接口调用其他合约，减少耦合，就是我调用的是，只关心函数签名–就是函数的入参和返回的结果，不关心具体实现&#x3D;&#x3D;&#x3D;&#x3D;比如说微信也有支付方法、支付宝也有支付方法，我只关心我传未支付订单给支付方法，支付方法告诉我支付结果即可，我不关注其内部是怎么实现的</p>
+<p>3、支持多合约协作和模块化开发—–不同合约实现相同接口，可以互换使用</p>
+</blockquote>
+<p>接口虽然不实现任何功能，但它hi智能合约的骨架，如果智能合约实现了某种接口（比如说<code>ERC20</code>或者<code>ERC721</code>）,那其他Dapp和智能合约就知道如何与他交互</p>
+<p>另外，接口与合约<code>ABI</code>（Application Binary Interface）等价，可以相互转换：编译接口可以得到合约的<code>ABI</code>，利用<a target="_blank" rel="noopener" href="https://gnidan.github.io/abi-to-sol/">abi-to-sol工具</a>，也可以将<code>ABI json</code>文件转换为<code>接口sol</code>文件。</p>
+<p>我们以<code>ERC721</code>接口合约<code>IERC721</code>为例，它定义了3个<code>event</code>和9个<code>function</code>，所有<code>ERC721</code>标准的NFT都实现了这些函数。我们可以看到，接口和常规合约的区别在于每个函数都以<code>;</code>代替函数体<code>&#123; &#125;</code>结尾。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs solidity">import &quot;@openzeppelin/contracts/utils/introspection/IERC165.sol&quot;;<br><br>interface IERC721 is IERC165 &#123;<br>    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);<br>    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);<br>    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);<br>    <br>    function balanceOf(address owner) external view returns (uint256 balance);<br><br>    function ownerOf(uint256 tokenId) external view returns (address owner);<br><br>    function safeTransferFrom(address from, address to, uint256 tokenId) external;<br><br>    function transferFrom(address from, address to, uint256 tokenId) external;<br><br>    function approve(address to, uint256 tokenId) external;<br><br>    function getApproved(uint256 tokenId) external view returns (address operator);<br><br>    function setApprovalForAll(address operator, bool _approved) external;<br><br>    function isApprovedForAll(address owner, address operator) external view returns (bool);<br><br>    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;<br>&#125;<br><br>contract interactBAYC &#123;<br>    // 利用BAYC地址创建接口合约变量（ETH主网）--这里可以看作BAYC是IERC721的实力化对象<br>    IERC721 BAYC = IERC721(0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D);<br><br>    // 通过接口调用BAYC的balanceOf()查询持仓量<br>    function balanceOfBAYC(address owner) external view returns (uint256 balance)&#123;<br>        // 当输入BAYC.的时候就会出来很多方法提示，因为BAYC已经具备了IERC721的功能<br>        return BAYC.balanceOf(owner);<br>        <br>    &#125;<br><br>    // 通过接口调用BAYC的safeTransferFrom()安全转账<br>    function safeTransferFromBAYC(address from, address to, uint256 tokenId) external&#123;<br>        BAYC.safeTransferFrom(from, to, tokenId);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="IERC721事件"><a href="#IERC721事件" class="headerlink" title="IERC721事件"></a>IERC721事件</h3><p><code>IERC721</code>包含3个事件，其中<code>Transfer</code>和<code>Approval</code>事件在<code>ERC20</code>中也有。</p>
+<ul>
+<li><code>Transfer</code>事件：在转账时被释放，记录代币的发出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
+<li><code>Approval</code>事件：在授权时被释放，记录授权地址<code>owner</code>，被授权地址<code>approved</code>和<code>tokenId</code>。</li>
+<li><code>ApprovalForAll</code>事件：在批量授权时被释放，记录批量授权的发出地址<code>owner</code>，被授权地址<code>operator</code>和授权与否的<code>approved</code>。</li>
+</ul>
+<h3 id="IERC721函数"><a href="#IERC721函数" class="headerlink" title="IERC721函数"></a>IERC721函数</h3><ul>
+<li><code>balanceOf</code>：返回某地址的NFT持有量<code>balance</code>。</li>
+<li><code>ownerOf</code>：返回某<code>tokenId</code>的主人<code>owner</code>。</li>
+<li><code>transferFrom</code>：普通转账，参数为转出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
+<li><code>safeTransferFrom</code>：安全转账（如果接收方是合约地址，会要求实现<code>ERC721Receiver</code>接口）。参数为转出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
+<li><code>approve</code>：授权另一个地址使用你的NFT。参数为被授权地址<code>approve</code>和<code>tokenId</code>。</li>
+<li><code>getApproved</code>：查询<code>tokenId</code>被批准给了哪个地址。</li>
+<li><code>setApprovalForAll</code>：将自己持有的该系列NFT批量授权给某个地址<code>operator</code>。</li>
+<li><code>isApprovedForAll</code>：查询某地址的NFT是否批量授权给了另一个<code>operator</code>地址。</li>
+<li><code>safeTransferFrom</code>：安全转账的重载函数，参数里面包含了<code>data</code>。</li>
+</ul>
+<h2 id="接口在什么时候使用呢？"><a href="#接口在什么时候使用呢？" class="headerlink" title="接口在什么时候使用呢？"></a>接口在什么时候使用呢？</h2><p>如果我们知道一个合约实现了<code>IERC721</code>接口，我们不需要知道它具体代码实现，就可以与它交互。</p>
+<p>无聊猿<code>BAYC</code>属于<code>ERC721</code>代币，实现了<code>IERC721</code>接口的功能。我们不需要知道它的源代码，只需知道它的合约地址，用<code>IERC721</code>接口就可以与它交互，比如用<code>balanceOf()</code>来查询某个地址的<code>BAYC</code>余额，用<code>safeTransferFrom()</code>来转账<code>BAYC</code>。像是一种继承啊</p>
+<h1 id="15-异常"><a href="#15-异常" class="headerlink" title="15 异常"></a>15 异常</h1><p><code>Solidity</code>三种抛出异常的方法：<code>error</code>，<code>require</code>和<code>assert</code>，并比较三种方法的<code>gas</code>消耗</p>
+<h2 id="error"><a href="#error" class="headerlink" title="error"></a>error</h2><p><code>error</code>是0.8.4版本新加的内容，自定义错误，可以方便且高效(省gas)的向用户解释操作失败的原因</p>
+<p>同时还可以抛出携带的参数，帮助更好的调试，可以在contract之外定义异常，</p>
 
                 
               </div>
