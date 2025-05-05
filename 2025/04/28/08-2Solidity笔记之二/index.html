@@ -24,7 +24,7 @@
 <meta property="og:description" content="10. 控制流，用Solidity实现插入排序控制流solidity的几种控制流  if-else for循环 while循环 do-while循环 三元运算符 插入排序  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-28T09:46:10.000Z">
-<meta property="article:modified_time" content="2025-04-30T11:52:36.267Z">
+<meta property="article:modified_time" content="2025-05-05T06:36:18.517Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.8k 字
+          4.6k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          32 分钟
+          39 分钟
         
       </span>
     
@@ -442,8 +442,55 @@
 <h2 id="接口在什么时候使用呢？"><a href="#接口在什么时候使用呢？" class="headerlink" title="接口在什么时候使用呢？"></a>接口在什么时候使用呢？</h2><p>如果我们知道一个合约实现了<code>IERC721</code>接口，我们不需要知道它具体代码实现，就可以与它交互。</p>
 <p>无聊猿<code>BAYC</code>属于<code>ERC721</code>代币，实现了<code>IERC721</code>接口的功能。我们不需要知道它的源代码，只需知道它的合约地址，用<code>IERC721</code>接口就可以与它交互，比如用<code>balanceOf()</code>来查询某个地址的<code>BAYC</code>余额，用<code>safeTransferFrom()</code>来转账<code>BAYC</code>。像是一种继承啊</p>
 <h1 id="15-异常"><a href="#15-异常" class="headerlink" title="15 异常"></a>15 异常</h1><p><code>Solidity</code>三种抛出异常的方法：<code>error</code>，<code>require</code>和<code>assert</code>，并比较三种方法的<code>gas</code>消耗</p>
-<h2 id="error"><a href="#error" class="headerlink" title="error"></a>error</h2><p><code>error</code>是0.8.4版本新加的内容，自定义错误，可以方便且高效(省gas)的向用户解释操作失败的原因</p>
-<p>同时还可以抛出携带的参数，帮助更好的调试，可以在contract之外定义异常，</p>
+<h2 id="error"><a href="#error" class="headerlink" title="error"></a>error</h2><p><code>error</code>是0.8.4版本新加的内容，</p>
+<ul>
+<li><p>功能：自定义错误，可以方便且高效(省gas)的向用户解释操作失败的原因</p>
+</li>
+<li><p>优点：同时还可以抛出携带的参数，帮助更好的调试，可以在contract之外定义异常，</p>
+</li>
+<li><p>注意：在执行当中，<code>error</code>必须搭配<code>revert</code>（回退）命令使用。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 自定义一个error <br>// error TransferNotOwner(); //自定义error<br>error TransferNotOwner(address sender); //自定义error<br>// <br>contract Errors &#123;<br>    mapping (uint256=&gt;address) private _owners;<br>    // 第一种，使用自定义错误<br>    function transferOwner1(uint256 tokenId,address newOwner)public  &#123;<br>        // 如果_owners 的tokenid对应的地址与msg就是调用者的地址不等的话就抛出一个自定义错误<br>        if(_owners[tokenId]!=msg.sender)&#123;<br>            revert TransferNotOwner(msg.sender); // <br>        // transact to Errors.transferOwner1 errored: Error occurred: revert.<br><br>        // revert<br>        // 	The transaction has been reverted to the initial state.<br>        // Error provided by the contract:<br>        // TransferNotOwner // 注意这里，这里显示了我们自定义的error-&gt;TransferNotOwner<br>        // Parameters:<br>        // &#123;<br>        //  &quot;sender&quot;: &#123;<br>        //   &quot;value&quot;: &quot;0x5B38Da6a701c568545dCfcB03FcB875f56beddC4&quot;<br>        //  &#125;<br>        // &#125;<br>        // If the transaction failed for not having enough gas, try increasing the gas limit gently.<br>     &#125;<br>        _owners[tokenId]=newOwner;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Require"><a href="#Require" class="headerlink" title="Require"></a>Require</h3><p><code>require</code>命令是<code>solidity 0.8版本</code>之前抛出异常的常用方法，目前很多主流合约仍然还在使用它。它很好用，</p>
+<ul>
+<li><p>缺点：就是<code>gas</code>随着描述异常的字符串长度增加，比<code>error</code>命令要高。</p>
+</li>
+<li><p>使用方法：<code>require(检查条件，&quot;异常的描述&quot;)</code>，当检查条件不成立的时候，就会抛出异常。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// <br>function transferOwner2(uint256 tokenId, address newOwner) public &#123;<br>    // 使用方法：require(检查条件，“异常的描述”);<br>    require(_owners[tokenId]==msg.sender,&quot; Trabsfer Not Owner&quot;);<br>    // transact to Errors.transferOwner2 errored: Error occurred: revert.<br><br>    // revert<br>    // 	The transaction has been reverted to the initial state.<br>    // Reason provided by the contract: &quot; Trabsfer Not Owner&quot;. //注意这里，这里显示了定义的异常描述<br>   _owners[tokenId]=newOwner;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Assert"><a href="#Assert" class="headerlink" title="Assert"></a>Assert</h3><blockquote>
+<p>其实就是断言用的，</p>
+</blockquote>
+<ul>
+<li>功能：<code>assert</code>命令一般用于程序员写程序<code>debug</code>，</li>
+<li>缺点：因为它不能解释抛出异常的原因（比<code>require</code>少个字符串）。</li>
+<li>它的用法很简单，<code>assert(检查条件）</code>，当检查条件不成立的时候，就会抛出异常。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function transferOwner3(uint256 tokenId,address newOwner) public &#123;<br>    assert(_owners[tokenId]==msg.sender); <br>    // revert 注意这里：只抛出了异常<br>    //     The transaction has been reverted to the initial state.<br>    // Note: The called function should be payable if you send value and the value you send should be less than your current balance.<br>    // If the transaction failed for not having enough gas, try increasing the gas limit gently.<br>   _owners[tokenId]=newOwner;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="三种方法的gas比较"><a href="#三种方法的gas比较" class="headerlink" title="三种方法的gas比较"></a>三种方法的gas比较</h2><p>我们比较一下三种抛出异常的<code>gas</code>消耗，通过remix控制台的Debug按钮，能查到每次函数调用的<code>gas</code>消耗分别如下： （使用0.8.17版本编译）</p>
+<ol>
+<li><strong><code>error</code>方法<code>gas</code>消耗</strong>：24457 (<strong>加入参数后<code>gas</code>消耗</strong>：24660)</li>
+<li><strong><code>require</code>方法<code>gas</code>消耗</strong>：24755</li>
+<li><strong><code>assert</code>方法<code>gas</code>消耗</strong>：24473</li>
+</ol>
+<p>我们可以看到，<code>error</code>方法<code>gas</code>最少，其次是<code>assert</code>，<code>require</code>方法消耗<code>gas</code>最多！因此，<code>error</code>既可以告知用户抛出异常的原因，又能省<code>gas</code>，大家要多用！（注意，由于部署测试时间的不同，每个函数的<code>gas</code>消耗会有所不同，但是比较结果会是一致的。）</p>
+<p><strong>备注:</strong> Solidity 0.8.0之前的版本，<code>assert</code>抛出的是一个 <code>panic exception</code>，会把剩余的 <code>gas</code> 全部消耗，不会返还。更多细节见<a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.17/control-structures.html">官方文档</a>。</p>
+<h1 id="16-函数重载【用的很少的】"><a href="#16-函数重载【用的很少的】" class="headerlink" title="16. 函数重载【用的很少的】"></a>16. 函数重载【用的很少的】</h1><p><code>Solidity</code>中允许函数进行重载（<code>overloading</code>），即名字相同但输入参数类型不同的函数可以同时存在，他们被视为不同的函数。注意，<code>Solidity</code>不允许修饰器（<code>modifier</code>）重载。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function saySomething() public pure returns(string memory)&#123;<br>    return(&quot;Nothing&quot;);<br>&#125;<br><br>function saySomething(string memory something) public pure returns(string memory)&#123;<br>    // 函数重载，重载就是重写这个同名函数<br>    return(something);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="实参匹配（Argument-Matching）"><a href="#实参匹配（Argument-Matching）" class="headerlink" title="实参匹配（Argument Matching）"></a>实参匹配（Argument Matching）</h3><p>在调用重载函数时，会把输入的实际参数和函数参数的变量类型做匹配。 如果出现多个匹配的重载函数，则会报错。下面这个例子有两个叫<code>f()</code>的函数，一个参数为<code>uint8</code>，另一个为<code>uint256</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function f(uint8 _in) public pure returns (uint8 out) &#123;<br>    out = _in;<br>&#125;<br><br>function f(uint256 _in) public pure returns (uint256 out) &#123;<br>    out = _in;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>我们调用<code>f(50)</code>，因为<code>50</code>既可以被转换为<code>uint8</code>，也可以被转换为<code>uint256</code>，因此会报错。</p>
 
                 
               </div>
@@ -505,6 +552,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/05/05/08-3Solidity%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%89/" title="08-3Solidity笔记之三">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">08-3Solidity笔记之三</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

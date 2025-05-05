@@ -1,0 +1,921 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wangxiaowang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="17. 库合约 站在巨人的肩膀上库合约是一种特殊的合约，为了提升Solidity代码的复用性和减少gas而存在。库合约是一系列的函数合集，由大神或者项目方创作，咱们站在巨人的肩膀上，会用就行了。  就是py的第三方库  他和普通合约主要有以下几点不同：  不能存在状态变量 不能够继承或被继承 不能接收以太币 不可以被销毁  注意：库合约中的函数可见性如果被设置为public或者external，则">
+<meta property="og:type" content="article">
+<meta property="og:title" content="08-3Solidity笔记之三">
+<meta property="og:url" content="http://example.com/2025/05/05/08-3Solidity%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%89/index.html">
+<meta property="og:site_name" content="Wang">
+<meta property="og:description" content="17. 库合约 站在巨人的肩膀上库合约是一种特殊的合约，为了提升Solidity代码的复用性和减少gas而存在。库合约是一系列的函数合集，由大神或者项目方创作，咱们站在巨人的肩膀上，会用就行了。  就是py的第三方库  他和普通合约主要有以下几点不同：  不能存在状态变量 不能够继承或被继承 不能接收以太币 不可以被销毁  注意：库合约中的函数可见性如果被设置为public或者external，则">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/web3/stacks2.jpeg">
+<meta property="article:published_time" content="2025-05-05T06:37:09.000Z">
+<meta property="article:modified_time" content="2025-05-05T10:40:40.699Z">
+<meta property="article:author" content="Wangxiaowang">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/web3/stacks2.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>08-3Solidity笔记之三 - Wang</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"37fd8385820c4abc0e564a2c423b7511","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?37fd8385820c4abc0e564a2c423b7511";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Home</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/web3/stacks1.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="08-3Solidity笔记之三"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 14:37" pubdate>
+          2025年5月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          28 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">08-3Solidity笔记之三</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="17-库合约-站在巨人的肩膀上"><a href="#17-库合约-站在巨人的肩膀上" class="headerlink" title="17. 库合约 站在巨人的肩膀上"></a>17. 库合约 站在巨人的肩膀上</h1><p>库合约是一种特殊的合约，为了提升<code>Solidity</code>代码的复用性和减少<code>gas</code>而存在。库合约是一系列的函数合集，由大神或者项目方创作，咱们站在巨人的肩膀上，会用就行了。</p>
+<blockquote>
+<p>就是py的第三方库</p>
+</blockquote>
+<p>他和普通合约主要有以下几点不同：</p>
+<ol>
+<li><strong>不能存在状态变量</strong></li>
+<li><strong>不能够继承或被继承</strong></li>
+<li><strong>不能接收以太币</strong></li>
+<li><strong>不可以被销毁</strong></li>
+</ol>
+<p><strong>注意</strong>：库合约中的函数可见性如果被设置为<code>public</code>或者<code>external</code>，则在调用函数时会触发一次<code>delegatecall</code>。而如果被设置为<code>internal</code>，则不会引起。对于设置为<code>private</code>可见性的函数来说，其仅能在库合约中可见，在其他合约中不可用。</p>
+<h2 id="Strings库合约【示例】"><a href="#Strings库合约【示例】" class="headerlink" title="Strings库合约【示例】"></a>Strings库合约【示例】</h2><p><code>Strings库合约</code>是将<code>uint256</code>类型转换为相应的<code>string</code>类型的代码库，样例代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs solidity">library Strings &#123;<br>    bytes16 private constant _HEX_SYMBOLS = &quot;0123456789abcdef&quot;;<br><br>    /**<br>     * @dev Converts a `uint256` to its ASCII `string` decimal representation.<br>     */<br>    function toString(uint256 value) public pure returns (string memory) &#123;<br>        // Inspired by OraclizeAPI&#x27;s implementation - MIT licence<br>        // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol<br><br>        if (value == 0) &#123;<br>            return &quot;0&quot;;<br>        &#125;<br>        uint256 temp = value;<br>        uint256 digits;<br>        while (temp != 0) &#123;<br>            digits++;<br>            temp /= 10;<br>        &#125;<br>        bytes memory buffer = new bytes(digits);<br>        while (value != 0) &#123;<br>            digits -= 1;<br>            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));<br>            value /= 10;<br>        &#125;<br>        return string(buffer);<br>    &#125;<br><br>    /**<br>     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.<br>     */<br>    function toHexString(uint256 value) public pure returns (string memory) &#123;<br>        if (value == 0) &#123;<br>            return &quot;0x00&quot;;<br>        &#125;<br>        uint256 temp = value;<br>        uint256 length = 0;<br>        while (temp != 0) &#123;<br>            length++;<br>            temp &gt;&gt;= 8;<br>        &#125;<br>        return toHexString(value, length);<br>    &#125;<br><br>    /**<br>     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.<br>     */<br>    function toHexString(uint256 value, uint256 length) public pure returns (string memory) &#123;<br>        bytes memory buffer = new bytes(2 * length + 2);<br>        buffer[0] = &quot;0&quot;;<br>        buffer[1] = &quot;x&quot;;<br>        for (uint256 i = 2 * length + 1; i &gt; 1; --i) &#123;<br>            buffer[i] = _HEX_SYMBOLS[value &amp; 0xf];<br>            value &gt;&gt;= 4;<br>        &#125;<br>        require(value == 0, &quot;Strings: hex length insufficient&quot;);<br>        return string(buffer);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>它主要包含两个函数，<code>toString()</code>将<code>uint256</code>转换为10进制的<code>string</code>，<code>toHexString()</code>将<code>uint256</code>转换为16进制的<code>string</code>。</p>
+<h3 id="如何使用库合约"><a href="#如何使用库合约" class="headerlink" title="如何使用库合约"></a>如何使用库合约</h3><p>我们用<code>Strings</code>库合约的<code>toHexString()</code>来演示两种使用库合约中函数的办法。</p>
+<ol>
+<li><p>利用using for指令</p>
+<p>指令<code>using A for B;</code>可用于附加库合约（从库 A）到任何类型（B）。添加完指令后，库<code>A</code>中的函数会自动添加为<code>B</code>类型变量的成员，可以直接调用。注意：在调用的时候，这个变量会被当作第一个参数传递给函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 利用using for指令<br>using Strings for uint256;<br>function getString1(uint256 _number) public pure returns(string memory)&#123;<br>    // 库合约中的函数会自动添加为uint256型变量的成员<br>    return _number.toHexString();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>通过库合约名称调用函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 直接通过库合约名调用<br>function getString2(uint256 _number) public pure returns(string memory)&#123;<br>    return Strings.toHexString(_number);<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>我们部署合约并输入<code>170</code>测试一下，两种方法均能返回正确的<code>16进制string</code> “0xaa”。证明我们调用库合约成功！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这一讲，我们用<code>ERC721</code>的引用的库合约<code>Strings</code>为例介绍<code>Solidity</code>中的库合约（<code>Library</code>）。99%的开发者都不需要自己去写库合约，会用大神写的就可以了。我们只需要知道什么情况该用什么库合约。常用的有：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/4a9cc8b4918ef3736229a5cc5a310bdc17bf759f/contracts/utils/Strings.sol">Strings</a>：将<code>uint256</code>转换为<code>String</code></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/4a9cc8b4918ef3736229a5cc5a310bdc17bf759f/contracts/utils/Address.sol">Address</a>：判断某个地址是否为合约地址</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/4a9cc8b4918ef3736229a5cc5a310bdc17bf759f/contracts/utils/Create2.sol">Create2</a>：更安全的使用<code>Create2 EVM opcode</code></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/4a9cc8b4918ef3736229a5cc5a310bdc17bf759f/contracts/utils/Arrays.sol">Arrays</a>：跟数组相关的库合约</li>
+</ol>
+<h1 id="18-Import"><a href="#18-Import" class="headerlink" title="18. Import"></a>18. Import</h1><blockquote>
+<p>导包</p>
+</blockquote>
+<h2 id="import用法"><a href="#import用法" class="headerlink" title="import用法"></a><code>import</code>用法</h2><ul>
+<li><p>通过源文件相对位置导入，例子：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs text">文件结构<br>├── Import.sol<br>└── Yeye.sol<br><br>// 通过文件相对位置import<br>import &#x27;./Yeye.sol&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>通过源文件网址导入网上的合约的全局符号，例子：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">// 通过网址引用<br>import &#x27;https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Address.sol&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>通过<code>npm</code>的目录导入，例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">import &#x27;@openzeppelin/contracts/access/Ownable.sol&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>通过指定<code>全局符号</code>导入合约特定的全局符号，例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">import &#123;Yeye&#125; from &#x27;./Yeye.sol&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>引用(<code>import</code>)在代码中的位置为：在声明版本号之后，在其余代码之前。</p>
+</li>
+</ul>
+<h2 id="测试导入结果"><a href="#测试导入结果" class="headerlink" title="测试导入结果"></a>测试导入结果</h2><p>我们可以用下面这段代码测试是否成功导入了外部源代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.21;<br><br>// 通过文件相对位置import<br>import &#x27;./Yeye.sol&#x27;;<br>// 通过`全局符号`导入特定的合约<br>import &#123;Yeye&#125; from &#x27;./Yeye.sol&#x27;;<br>// 通过网址引用<br>import &#x27;https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Address.sol&#x27;;<br>// 引用OpenZeppelin合约<br>import &#x27;@openzeppelin/contracts/access/Ownable.sol&#x27;;<br><br>contract Import &#123;<br>    // 成功导入Address库<br>    using Address for address;<br>    // 声明yeye变量<br>    Yeye yeye = new Yeye();<br><br>    // 测试是否能调用yeye的函数<br>    function test() external&#123;<br>        yeye.hip();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="19-接收ETH-receive和fallback"><a href="#19-接收ETH-receive和fallback" class="headerlink" title="19. 接收ETH receive和fallback"></a>19. 接收ETH receive和fallback</h1><p><code>Solidity</code>支持两种特殊的回调函数，<code>receive()</code>和<code>fallback()</code>，他们主要在两种情况下被使用：</p>
+<ol>
+<li>接收ETH</li>
+<li>处理合约中不存在的函数调用（代理合约proxy contract）</li>
+</ol>
+<p>注意⚠️：在Solidity 0.6.x版本之前，语法上只有 <code>fallback()</code> 函数，用来接收用户发送的ETH时调用以及在被调用函数签名没有匹配到时，来调用。 0.6版本之后，Solidity才将 <code>fallback()</code> 函数拆分成 <code>receive()</code> 和 <code>fallback()</code> 两个函数。</p>
+<p>我们这一讲主要讲接收ETH的情况。</p>
+<h2 id="接收ETH函数-receive"><a href="#接收ETH函数-receive" class="headerlink" title="接收ETH函数 receive"></a>接收ETH函数 receive</h2><ul>
+<li><strong><code>receive</code> 函数</strong>：专门用来接收 <strong>纯粹的以太币转账</strong>（即没有调用任何函数的数据）。</li>
+<li><strong><code>fallback</code> 函数</strong>：当调用的函数不存在，或者调用时带有数据但没有匹配的函数时执行；也可以用来接收以太币（如果没有 <code>receive</code> 函数）。</li>
+</ul>
+<h3 id="receive-接收函数"><a href="#receive-接收函数" class="headerlink" title="receive() 接收函数"></a><code>receive()</code> 接收函数</h3><ul>
+<li>只在合约接收到没有任何数据的以太币转账时执行，例如使用 <code>address.send()</code>、<code>address.transfer()</code> 或者空数据的 <code>call</code>。</li>
+<li>一个合约只能有一个 <code>receive</code> 函数。</li>
+<li>如果没有定义 <code>receive</code> 函数，且有 <code>payable fallback</code> 函数，纯以太币转账会调用 <code>fallback</code> 函数。</li>
+<li>如果两者都没有，合约会拒绝接收纯以太币转账，交易回滚。</li>
+<li>receive最好不要有复杂的逻辑：因为如果别人用<code>send</code>和<code>transfer</code>方法发送<code>ETH</code>的话，<code>gas</code>会限制在<code>2300</code>，<code>receive()</code>太复杂可能会触发<code>Out of Gas</code>报错；如果用<code>call</code>就可以自定义<code>gas</code>执行更复杂的逻辑</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 定义事件<br>event Received(address Sender, uint Value);<br>// 接收ETH时释放Received事件<br>receive() external payable &#123;<br>    emit Received(msg.sender, msg.value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>有些恶意合约，会在<code>receive()</code> 函数（老版本的话，就是 <code>fallback()</code> 函数）嵌入恶意消耗<code>gas</code>的内容或者使得执行故意失败的代码，导致一些包含退款和转账逻辑的合约不能正常工作，因此写包含退款等逻辑的合约时候，一定要注意这种情况。</p>
+<h3 id="fallback-函数"><a href="#fallback-函数" class="headerlink" title="fallback() 函数"></a><code>fallback()</code> 函数</h3><ul>
+<li>当调用的函数不存在时执行。</li>
+<li>也会在调用带数据但无匹配函数时执行。</li>
+<li>必须由<code>external</code>修饰，一般也会用<code>payable</code>修饰，用于接收ETH:<code>fallback() external payable &#123; ... &#125;</code>。</li>
+<li>适合做代理合约、日志记录、或者处理未知函数调用。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">event fallbackCalled(address Sender, uint Value, bytes Data);<br><br>// fallback<br>fallback() external payable&#123;<br>    emit fallbackCalled(msg.sender, msg.value, msg.data);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="receive和fallback的区别"><a href="#receive和fallback的区别" class="headerlink" title="receive和fallback的区别"></a>receive和fallback的区别</h2><p><code>receive</code>和<code>fallback</code>都能够用于接收<code>ETH</code>，他们触发的规则如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs solidity">触发fallback() 还是 receive()?<br>           接收ETH<br>              |<br>         msg.data是空？<br>            /  \<br>          是    否<br>          /      \<br>receive()存在?   fallback()<br>        / \<br>       是  否<br>      /     \<br>receive()   fallback()<br></code></pre></td></tr></table></figure>
+
+<p>简单来说，合约接收<code>ETH</code>时，<code>msg.data</code>为空且存在<code>receive()</code>时，会触发<code>receive()</code>；<code>msg.data</code>不为空或不存在<code>receive()</code>时，会触发<code>fallback()</code>，此时<code>fallback()</code>必须为<code>payable</code>。</p>
+<p><code>receive()</code>和<code>payable fallback()</code>均不存在的时候，向合约<strong>直接</strong>发送<code>ETH</code>将会报错（你仍可以通过带有<code>payable</code>的函数向合约发s送<code>ETH</code>）。</p>
+<p><img src="/img/web3/solidity19-1.png" srcset="/img/loading.gif" lazyload alt="s"></p>
+<p><img src="/img/web3/solidity19-2.jpg" srcset="/img/loading.gif" lazyload alt="s"></p>
+<h1 id="20-发送ETH"><a href="#20-发送ETH" class="headerlink" title="20. 发送ETH"></a>20. 发送ETH</h1><p><code>Solidity</code>有三种方法向其他合约发送<code>ETH</code>，他们是：<code>transfer()</code>，<code>send()</code>和<code>call()</code>，其中<code>call()</code>是被鼓励的用法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract ReceiveETH &#123;<br>    // 收到eth事件，记录amount和gas<br>    event Log(uint amount, uint gas);<br>    <br>    // receive方法，接收eth时被触发<br>    receive() external payable&#123;<br>        emit Log(msg.value, gasleft());<br>    &#125;<br>    <br>    // 返回合约ETH余额<br>    function getBalance() view public returns(uint) &#123;<br>        return address(this).balance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>部署合约后调用getBalance 方法查询合约当前余额显示当前余额是0</p>
+<h2 id="发送ETH合约-三种方法"><a href="#发送ETH合约-三种方法" class="headerlink" title="发送ETH合约 三种方法"></a>发送ETH合约 三种方法</h2><p>在发送之前，现在发送ETH合约，先在发送ETH合约<code>SendETH</code>中实现<code>payable</code>的<code>构造函数</code>和<code>receive()</code>，让我们能够在部署时和部署后向合约转账。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract SendETH &#123;<br>    // 构造函数，payable使得部署的时候可以转eth进去<br>    constructor() payable&#123;&#125;<br>    // receive方法，接收eth时被触发<br>    receive() external payable&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="1、transfer"><a href="#1、transfer" class="headerlink" title="1、transfer"></a>1、transfer</h3><ul>
+<li>用法是<code>接收方地址.transfer(发送ETH数额)</code>。</li>
+<li><code>transfer()</code>的<code>gas</code>限制是<code>2300</code>，足够用于转账，但对方合约的<code>fallback()</code>或<code>receive()</code>函数不能实现太复杂的逻辑。</li>
+<li><code>transfer()</code>如果转账失败，会自动<code>revert</code>（回滚交易）。</li>
+</ul>
+<p>代码样例，注意里面的<code>_to</code>填<code>ReceiveETH</code>合约的地址，<code>amount</code>是<code>ETH</code>转账金额：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 用transfer()发送ETH<br>function transferETH(address payable _to, uint256 amount) external payable&#123;<br>    _to.transfer(amount);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>部署<code>SendETH</code>合约后，对<code>ReceiveETH</code>合约发送ETH，此时<code>amount</code>为10，<code>value</code>为0，<code>amount</code>&gt;<code>value</code>，转账失败，发生<code>revert</code>。</p>
+<p><img src="/img/web3/solidity20-1.jpg" srcset="/img/loading.gif" lazyload alt="s"></p>
+<p>此时<code>amount</code>为10，<code>value</code>为10，<code>amount</code>&lt;&#x3D;<code>value</code>，转账成功。</p>
+<p><img src="/img/web3/solidity20-2.jpg" srcset="/img/loading.gif" lazyload alt="s"></p>
+<p>在<code>ReceiveETH</code>合约中，运行<code>getBalance()</code>函数，可以看到当前合约的<code>ETH</code>余额为<code>10</code></p>
+<p><img src="/img/web3/solidity20-3.jpg" srcset="/img/loading.gif" lazyload alt="s"></p>
+<h3 id="send"><a href="#send" class="headerlink" title="send"></a>send</h3><ul>
+<li>用法是<code>接收方地址.send(发送ETH数额)</code>。</li>
+<li><code>send()</code>的<code>gas</code>限制是<code>2300</code>，足够用于转账，但对方合约的<code>fallback()</code>或<code>receive()</code>函数不能实现太复杂的逻辑。</li>
+<li><code>send()</code>如果转账失败，不会<code>revert</code>。</li>
+<li><code>send()</code>的返回值是<code>bool</code>，代表着转账成功或失败，需要额外代码处理一下。</li>
+</ul>
+<p>代码样例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">error SendFailed(); // 用send发送ETH失败error<br><br>// send()发送ETH<br>function sendETH(address payable _to, uint256 amount) external payable&#123;<br>    // 处理下send的返回值，如果失败，revert交易并发送error<br>    bool success = _to.send(amount);<br>    if(!success)&#123;<br>        revert SendFailed();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>执行结果与上面的transfer 一致。。。。</p>
+<h3 id="call"><a href="#call" class="headerlink" title="call"></a>call</h3><ul>
+<li>用法是<code>接收方地址.call&#123;value: 发送ETH数额&#125;(&quot;&quot;)</code>。</li>
+<li><code>call()</code>没有<code>gas</code>限制，可以支持对方合约<code>fallback()</code>或<code>receive()</code>函数实现复杂逻辑。</li>
+<li><code>call()</code>如果转账失败，不会<code>revert</code>。</li>
+<li><code>call()</code>的返回值是<code>(bool, bytes)</code>，其中<code>bool</code>代表着转账成功或失败，需要额外代码处理一下。</li>
+</ul>
+<p>执行结果与上面的transfer一致</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>这一讲，我们介绍<code>Solidity</code>三种发送<code>ETH</code>的方法：<code>transfer</code>，<code>send</code>和<code>call</code>。</p>
+<ul>
+<li><code>call</code>没有<code>gas</code>限制，最为灵活，是最提倡的方法；</li>
+<li><code>transfer</code>有<code>2300 gas</code>限制，但是发送失败会自动<code>revert</code>交易，是次优选择；</li>
+<li><code>send</code>有<code>2300 gas</code>限制，而且发送失败不会自动<code>revert</code>交易，几乎没有人用它。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>自动回滚失败</th>
+<th>返回值</th>
+<th>Gas 限制</th>
+<th>灵活性</th>
+<th>安全性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>transfer</code></td>
+<td>是</td>
+<td>无</td>
+<td>2300</td>
+<td>低</td>
+<td>安全，但可能失败</td>
+</tr>
+<tr>
+<td><code>send</code></td>
+<td>否</td>
+<td>有</td>
+<td>2300</td>
+<td>低</td>
+<td>需要手动处理失败</td>
+</tr>
+<tr>
+<td><code>call</code></td>
+<td>否</td>
+<td>有</td>
+<td>无限制</td>
+<td>高</td>
+<td>灵活但需防范重入攻击风险</td>
+</tr>
+</tbody></table>
+<h2 id="重要提示"><a href="#重要提示" class="headerlink" title="重要提示"></a>重要提示</h2><ul>
+<li><strong>重入攻击风险</strong>：使用 <code>call</code> 发送 ETH 时，接收合约可能执行恶意代码，导致重入攻击。建议使用“检查-效果-交互”模式，或者引入重入锁（<code>ReentrancyGuard</code>）保护。</li>
+<li><strong>推荐用法</strong>：现代 Solidity 合约推荐使用 <code>call</code>，因为它灵活且兼容更多情况，但要注意安全。</li>
+</ul>
+<h1 id="21-调用其他合约"><a href="#21-调用其他合约" class="headerlink" title="21. 调用其他合约"></a>21. 调用其他合约</h1><p>在<code>Solidity</code>中，一个合约可以调用另一个合约的函数，这在构建复杂的DApps时非常有用。</p>
+<h2 id="目标合约"><a href="#目标合约" class="headerlink" title="目标合约"></a>目标合约</h2><p>我们先写一个简单的合约<code>OtherContract</code>，用于被其他合约调用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract OtherContract &#123;<br>    uint256 private _x = 0; // 状态变量_x<br>    // 收到eth的事件，记录amount和gas<br>    event Log(uint amount, uint gas);<br>    <br>    // 返回合约ETH余额<br>    function getBalance() view public returns(uint) &#123;<br>        return address(this).balance;<br>    &#125;<br><br>    // 可以调整状态变量_x的函数，并且可以往合约转ETH (payable)<br>    function setX(uint256 x) external payable&#123;<br>        _x = x;<br>        // 如果转入ETH，则释放Log事件<br>        if(msg.value &gt; 0)&#123;<br>            emit Log(msg.value, gasleft());<br>        &#125;<br>    &#125;<br><br>    // 读取_x<br>    function getX() external view returns(uint x)&#123;<br>        x = _x;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个合约包含一个状态变量<code>_x</code>，一个事件<code>Log</code>在收到<code>ETH</code>时触发，三个函数：</p>
+<ul>
+<li><code>getBalance()</code>: 返回合约<code>ETH</code>余额。</li>
+<li><code>setX()</code>: <code>external payable</code>函数，可以设置<code>_x</code>的值，并向合约发送<code>ETH</code>。</li>
+<li><code>getX()</code>: 读取<code>_x</code>的值。</li>
+</ul>
+<h2 id="调用OtherContract合约"><a href="#调用OtherContract合约" class="headerlink" title="调用OtherContract合约"></a>调用<code>OtherContract</code>合约</h2><p>我们可以利用合约的地址和合约代码（或接口）来创建合约的引用：</p>
+<ul>
+<li><code>_Name(_Address)</code>，其中<code>_Name</code>是合约名，应与合约代码（或接口）中标注的合约名保持一致，</li>
+<li><code>_Address</code>是合约地址。</li>
+<li>然后用合约的引用来调用它的函数：<code>_Name(_Address).f()</code>，其中<code>f()</code>是要调用的函数</li>
+</ul>
+<p>4个示例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs solidity">&#125;<br>contract CallContract &#123;<br>    // 示例一：<br>    // callSetX 要传对应的合约地址和x变量值，<br>    // 调用callSetX方法后，再次查询OtherContract的x的值，发现发生了改变<br>    function callSetX(address _Address,uint256 x)external  &#123;<br>        // 合约名称(合约地址).方法名称(方法参数) <br>        OtherContract(_Address).setX(x);// 调用OtherContract的<br>    &#125;<br>    // 示例二： 在入参中类型直接写要调用的合约名称，值写地址，传参的时候就传对方合约<br>    function callGetX(OtherContract _Address)external view returns (uint x) &#123;<br>        x = _Address.getX();<br>    &#125;<br>    // 示例三：可以创建合约变量，然后通过它来调用目标函数。<br>    function callGetX2(address _Address)external view returns (uint x) &#123;<br>        OtherContract oc = OtherContract(_Address);//变量oc存储了OtherContract合约的引用<br>        x = oc.getX();<br>    &#125;<br>    // 示例四：调用合约并发送ETH，调用目标合约的拥有payable的函数来给目标合约转账eth<br>    function setTransferETH(address otherContract,uint256 x)payable external  &#123;<br>        // 如果目标合约的函数是payable的，则可以通过调用这个函数来给合约转账<br>        OtherContract(otherContract).setX&#123;value:msg.value&#125;(x);<br>        // 调用setTransferETH 的时候注意，传入合约地址，传入x变量，然后value给10ETH<br>        // 此时发现，目标合约的x变量被改变了，且目标合约收到了10ETH的转账<br>        // 所以设计的意义就是可以通过一次调用，实现“状态修改 + 资金转账”的两个动作<br>        // 二是方便合约之间交互，尤其是需要用ETH作为调用条件或者支付费用时<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>08-3Solidity笔记之三</div>
+      <div>http://example.com/2025/05/05/08-3Solidity笔记之三/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wangxiaowang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/04/28/08-2Solidity%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/" title="08-2Solidity笔记之二">
+                        <span class="hidden-mobile">08-2Solidity笔记之二</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"QE69Ypw2FdG2cP7zRWgtj8ii-gzGzoHsz","appKey":"p8TvvzGc2rQ02TfZHuJppQLO","path":"window.location.pathname","placeholder":"欢迎留下评论，嘿嘿！","avatar":"monsterid","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"QE69Ypw2FdG2cP7zRWgtj8ii-gzGzoHsz","appkey":"p8TvvzGc2rQ02TfZHuJppQLO"},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
