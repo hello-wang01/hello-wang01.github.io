@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/stacks2.jpeg">
 <meta property="article:published_time" content="2025-05-05T06:37:09.000Z">
-<meta property="article:modified_time" content="2025-05-05T10:40:40.699Z">
+<meta property="article:modified_time" content="2025-05-06T06:43:47.445Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/stacks2.jpeg">
@@ -263,7 +263,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.3k 字
+          5.9k 字
         
       </span>
     
@@ -274,7 +274,7 @@
         
         
         
-          28 分钟
+          50 分钟
         
       </span>
     
@@ -526,6 +526,190 @@
 <p>4个示例</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs solidity">&#125;<br>contract CallContract &#123;<br>    // 示例一：<br>    // callSetX 要传对应的合约地址和x变量值，<br>    // 调用callSetX方法后，再次查询OtherContract的x的值，发现发生了改变<br>    function callSetX(address _Address,uint256 x)external  &#123;<br>        // 合约名称(合约地址).方法名称(方法参数) <br>        OtherContract(_Address).setX(x);// 调用OtherContract的<br>    &#125;<br>    // 示例二： 在入参中类型直接写要调用的合约名称，值写地址，传参的时候就传对方合约<br>    function callGetX(OtherContract _Address)external view returns (uint x) &#123;<br>        x = _Address.getX();<br>    &#125;<br>    // 示例三：可以创建合约变量，然后通过它来调用目标函数。<br>    function callGetX2(address _Address)external view returns (uint x) &#123;<br>        OtherContract oc = OtherContract(_Address);//变量oc存储了OtherContract合约的引用<br>        x = oc.getX();<br>    &#125;<br>    // 示例四：调用合约并发送ETH，调用目标合约的拥有payable的函数来给目标合约转账eth<br>    function setTransferETH(address otherContract,uint256 x)payable external  &#123;<br>        // 如果目标合约的函数是payable的，则可以通过调用这个函数来给合约转账<br>        OtherContract(otherContract).setX&#123;value:msg.value&#125;(x);<br>        // 调用setTransferETH 的时候注意，传入合约地址，传入x变量，然后value给10ETH<br>        // 此时发现，目标合约的x变量被改变了，且目标合约收到了10ETH的转账<br>        // 所以设计的意义就是可以通过一次调用，实现“状态修改 + 资金转账”的两个动作<br>        // 二是方便合约之间交互，尤其是需要用ETH作为调用条件或者支付费用时<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
+<h1 id="22-Call"><a href="#22-Call" class="headerlink" title="22. Call"></a>22. Call</h1><p>call 是底层函数，是地址类型数据自带的底层函数（方法），用来与其他合约交互</p>
+<p>它的返回值为<code>(bool, bytes memory)</code>对应是否成功和目标函数的返回值</p>
+<ul>
+<li><code>call</code>是<code>Solidity</code>官方推荐的通过触发<code>fallback</code>或<code>receive</code>函数发送<code>ETH</code>的方法。</li>
+<li>不推荐用<code>call</code>来调用另一个合约，因为当你调用不安全合约的函数时，你就把主动权交给了它。推荐的方法仍是声明合约变量后调用函数，如：<code>OtherContract(_Address).func(args)</code>见<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/tree/main/21_CallContract">第21讲：调用其他合约</a></li>
+<li>当我们不知道对方合约的源代码或<code>ABI</code>，就没法生成合约变量；这时，我们仍可以通过<code>call</code>调用对方合约的函数。</li>
+</ul>
+<h2 id="call-使用规则"><a href="#call-使用规则" class="headerlink" title="call 使用规则"></a>call 使用规则</h2><p><code>call</code>的使用规则如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">目标合约地址.call(字节码);<br></code></pre></td></tr></table></figure>
+
+
+
+<p>其中<code>字节码</code>利用结构化编码函数<code>abi.encodeWithSignature</code>获得：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">abi.encodeWithSignature(&quot;函数签名&quot;, 逗号分隔的具体参数)<br></code></pre></td></tr></table></figure>
+
+
+
+<p><code>函数签名</code>为<code>&quot;函数名（逗号分隔的参数类型）&quot;</code>。例如<code>abi.encodeWithSignature(&quot;f(uint256,address)&quot;, _x, _addr)</code>。</p>
+<p>另外<code>call</code>在调用合约时可以指定交易发送的<code>ETH</code>数额和<code>gas</code>数额：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">目标合约地址.call&#123;value:发送数额, gas:gas数额&#125;(字节码);<br></code></pre></td></tr></table></figure>
+
+
+
+<p>看起来有点复杂，下面我们举个<code>call</code>应用的例子。</p>
+<h3 id="目标合约-1"><a href="#目标合约-1" class="headerlink" title="目标合约"></a>目标合约</h3><p>我们先写一个简单的目标合约<code>OtherContract</code>并部署，代码与第21讲中基本相同，只是多了<code>fallback</code>函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract OtherContract &#123;<br>    uint256 private _x = 0; // 状态变量x<br>    // 收到eth的事件，记录amount和gas<br>    event Log(uint amount, uint gas);<br>    <br>    fallback() external payable&#123;&#125;<br><br>    // 返回合约ETH余额<br>    function getBalance() view public returns(uint) &#123;<br>        return address(this).balance;<br>    &#125;<br><br>    // 可以调整状态变量_x的函数，并且可以往合约转ETH (payable)<br>    function setX(uint256 x) external payable&#123;<br>        _x = x;<br>        // 如果转入ETH，则释放Log事件<br>        if(msg.value &gt; 0)&#123;<br>            emit Log(msg.value, gasleft());<br>        &#125;<br>    &#125;<br><br>    // 读取x<br>    function getX() external view returns(uint x)&#123;<br>        x = _x;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>这个合约包含一个状态变量<code>x</code>，一个在收到<code>ETH</code>时触发的事件<code>Log</code>，三个函数：</p>
+<ul>
+<li><code>getBalance()</code>: 返回合约<code>ETH</code>余额。</li>
+<li><code>setX()</code>: <code>external payable</code>函数，可以设置<code>x</code>的值，并向合约发送<code>ETH</code>。</li>
+<li><code>getX()</code>: 读取<code>x</code>的值。</li>
+</ul>
+<h4 id="1-Response事件"><a href="#1-Response事件" class="headerlink" title="1. Response事件"></a>1. Response事件</h4><p>我们写一个<code>Call</code>合约来调用目标合约函数。首先定义一个<code>Response</code>事件，输出<code>call</code>返回的<code>success</code>和<code>data</code>，方便我们观察返回值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 定义Response事件，输出call返回的结果success和data<br>event Response(bool success, bytes data);<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-调用setX函数"><a href="#2-调用setX函数" class="headerlink" title="2. 调用setX函数"></a>2. 调用setX函数</h4><p>我们定义<code>callSetX</code>函数来调用目标合约的<code>setX()</code>，转入<code>msg.value</code>数额的<code>ETH</code>，并释放<code>Response</code>事件输出<code>success</code>和<code>data</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function callSetX(address payable _addr, uint256 x) public payable &#123;<br>    // call setX()，同时可以发送ETH<br>    // // 这里call&#123;value: msg.value&#125;的作用是向目标合约发送eth<br>    (bool success, bytes memory data) = _addr.call&#123;value: msg.value&#125;(<br>        abi.encodeWithSignature(&quot;setX(uint256)&quot;, x)<br>    );<br><br>    emit Response(success, data); //释放事件<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>接下来我们调用<code>callSetX</code>把状态变量<code>_x</code>改为5，参数为<code>OtherContract</code>地址和<code>5</code>，由于目标函数<code>setX()</code>没有返回值，因此<code>Response</code>事件输出的<code>data</code>为<code>0x</code>，也就是空。</p>
+<p><img src="/img/web3/solidity22-1.jpg" srcset="/img/loading.gif" lazyload></p>
+<h4 id="3-调用getX函数"><a href="#3-调用getX函数" class="headerlink" title="3. 调用getX函数"></a>3. 调用getX函数</h4><p>下面我们调用<code>getX()</code>函数，它将返回目标合约<code>_x</code>的值，类型为<code>uint256</code>。我们可以利用<code>abi.decode</code>来解码<code>call</code>的返回值<code>data</code>，并读出数值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function callGetX(address  _addr)external returns (uint256) &#123;<br>// 由于getX()方法只是个查询，不需要付钱，所以没有payable<br>    (bool success,bytes memory data)=_addr.call(<br>        abi.encodeWithSignature(&quot;getX()&quot;)<br>    );<br>    emit Response(success,data);<br>    return abi.decode(data, (uint256));// data返回0x0000000000000000000000000000000000000000000000000000000000000005 就是5的uint256格式<br>&#125;<br>    function callGetBalances(address  _addr)external returns (uint256) &#123;<br>    (bool success,bytes memory data)=_addr.call(<br>        abi.encodeWithSignature(&quot;getBalance()&quot;)<br>    );<br>    emit Response(success,data);<br>    return abi.decode(data, (uint256));// data返回0x000000000000000000000000000000000000000000000000000000000000000a 就是10的uint256格式<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-调用不存在的函数"><a href="#4-调用不存在的函数" class="headerlink" title="4. 调用不存在的函数"></a>4. 调用不存在的函数</h4><p>如果我们给<code>call</code>输入的函数不存在于目标合约，那么目标合约的<code>fallback</code>函数会被触发。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function callNonExist(address _addr) external&#123;<br>    // call 不存在的函数<br>    (bool success, bytes memory data) = _addr.call(<br>        abi.encodeWithSignature(&quot;foo(uint256)&quot;)<br>    );<br><br>    emit Response(success, data); //释放事件<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>上面例子中，我们<code>call</code>了不存在的<code>foo</code>函数。<code>call</code>仍能执行成功，并返回<code>success</code>，但其实调用的目标合约<code>fallback</code>函数。</p>
+<h2 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h2><p>这一讲，我们介绍了如何用<code>call</code>这一低级函数来调用其他合约。<code>call</code>不是调用合约的推荐方法，因为不安全。但他能让我们在不知道源代码和<code>ABI</code>的情况下调用目标合约，很有用。</p>
+<h1 id="23-Delegatecall"><a href="#23-Delegatecall" class="headerlink" title="23. Delegatecall"></a>23. Delegatecall</h1><p><code>delegatecall</code>与<code>call</code>类似，是<code>Solidity</code>中地址类型的低级成员函数。<code>delegate</code>中是委托&#x2F;代表的意思，那么<code>delegatecall</code>委托了什么？</p>
+<p>它允许一个合约调用另一个合约的代码，但保留调用者（调用合约）的上下文（包括存储、地址、余额等）。</p>
+<p>简单来说：</p>
+<ul>
+<li><strong>调用的是另一个合约的代码</strong></li>
+<li><strong>执行时使用的是调用者合约的存储和上下文</strong></li>
+<li><strong>msg.sender 和 msg.value 保持为原始调用者的值</strong></li>
+</ul>
+<p>当用户<code>A</code>通过合约<code>B</code>来<code>call</code>合约<code>C</code>的时候，执行的是合约<code>C</code>的函数，<code>上下文</code>(<code>Context</code>，可以理解为包含变量和状态的环境)也是合约<code>C</code>的：<code>msg.sender</code>是<code>B</code>的地址，并且如果函数改变一些状态变量，产生的效果会作用于合约<code>C</code>的变量上。</p>
+<p><img src="/img/web3/solidity23-1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
+<p>而当用户<code>A</code>通过合约<code>B</code>来<code>delegatecall</code>合约<code>C</code>的时候，执行的是合约<code>C</code>的函数，但是<code>上下文</code>仍是合约<code>B</code>的：<code>msg.sender</code>是<code>A</code>的地址，并且如果函数改变一些状态变量，产生的效果会作用于合约<code>B</code>的变量上。</p>
+<p><img src="/img/web3/solidity23-2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
+<p>可以这样理解：一个投资者（用户<code>A</code>）把他的资产（<code>B</code>合约的<code>状态变量</code>）都交给一个风险投资代理（<code>C</code>合约）来打理。执行的是风险投资代理的函数，但是改变的是资产的状态。</p>
+<p><code>delegatecall</code>语法和<code>call</code>类似，也是：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">目标合约地址.delegatecall(二进制编码)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>其中<code>二进制编码</code>利用结构化编码函数<code>abi.encodeWithSignature</code>获得：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">abi<span class="hljs-selector-class">.encodeWithSignature</span>(<span class="hljs-string">&quot;函数签名&quot;</span>, 逗号分隔的具体参数)<br></code></pre></td></tr></table></figure>
+
+
+
+<p><code>函数签名</code>为<code>&quot;函数名（逗号分隔的参数类型）&quot;</code>。例如<code>abi.encodeWithSignature(&quot;f(uint256,address)&quot;, _x, _addr)</code>。</p>
+<p>和<code>call</code>不一样，<code>delegatecall</code>在调用合约时可以指定交易发送的<code>gas</code>，但不能指定发送的<code>ETH</code>数额</p>
+<blockquote>
+<p><strong>注意</strong>：<code>delegatecall</code>有安全隐患，使用时要保证当前合约和目标合约的状态变量存储结构相同，并且目标合约安全，不然会造成资产损失。</p>
+</blockquote>
+<h2 id="什么情况下会用到delegatecall"><a href="#什么情况下会用到delegatecall" class="headerlink" title="什么情况下会用到delegatecall?"></a>什么情况下会用到<code>delegatecall</code>?</h2><p>目前<code>delegatecall</code>主要有两个应用场景：</p>
+<ol>
+<li>代理合约（<code>Proxy Contract</code>）：将智能合约的存储合约和逻辑合约分开：代理合约（<code>Proxy Contract</code>）存储所有相关的变量，并且保存逻辑合约的地址；所有函数存在逻辑合约（<code>Logic Contract</code>）里，通过<code>delegatecall</code>执行。当升级时，只需要将代理合约指向新的逻辑合约即可。</li>
+<li>EIP-2535 Diamonds（钻石）：钻石是一个支持构建可在生产中扩展的模块化智能合约系统的标准。钻石是具有多个实施合约的代理合约。 更多信息请查看：<a target="_blank" rel="noopener" href="https://eip2535diamonds.substack.com/p/introduction-to-the-diamond-standard">钻石标准简介</a>。</li>
+</ol>
+<h2 id="delegatecall例子"><a href="#delegatecall例子" class="headerlink" title="delegatecall例子"></a><code>delegatecall</code>例子</h2><p>调用结构：你（<code>A</code>）通过合约<code>B</code>调用目标合约<code>C</code>。</p>
+<p>代码一样，只是call和delegatecall不同</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.21;<br><br><br><br>// 先定义被调用的合约C<br>contract C &#123;<br>    uint public num;<br>    address public sender;<br>    function setVars(uint _num)public payable &#123;<br>        num=_num;<br>        sender=msg.sender;<br>    &#125;<br>&#125;<br><br>// 定义发起调用的合约B<br>contract B &#123;<br>    uint public num;<br>    address public sender;<br>    //通过call来调用C的setVars()函数，将改变合约C里的状态变量<br>    function callSetVars(address _addr,uint _num)external payable  &#123;<br>        (bool success,bytes memory data)=_addr.call(<br>            abi.encodeWithSignature(&quot;setVars(uint256)&quot;, _num)<br>        );<br>    &#125;<br>    // 通过delegatecall来调用C的setVars()函数，将改变合约B里的状态变量<br>    // delegatecall 方法把合约B里面的状态变量改变了<br>    // 但是没有把C合约里面的状态变量给改变<br>    // *** 这里要注意delegate和call用法；<br>    // delegatecall只有特定场景使用 目前delegatecall最大的应用是代理合约和EIP-2535 Diamonds（钻石）。<br>    function delegatecallSetVars(address _addr, uint _num) external payable&#123;<br>    // delegatecall setVars()<br>        (bool success, bytes memory data) = _addr.delegatecall(<br>            abi.encodeWithSignature(&quot;setVars(uint256)&quot;, _num)<br>        );<br>&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>通过call来调用C的setVars()函数，将改变合约C里的状态变量，但是不会改变B合约里面的状态变量</li>
+</ul>
+<p><img src="/img/web3/solidity23-4.png" srcset="/img/loading.gif" lazyload alt="3"></p>
+<ul>
+<li>通过delegatecall来调用C的setVars()函数，将改变合约B里的状态变量 但是不会改变C里面的合约变量</li>
+</ul>
+<p><img src="/img/web3/solidity23-5.png" srcset="/img/loading.gif" lazyload alt="3"></p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li><code>delegatecall</code> 可能带来安全风险，尤其是存储布局不匹配时会导致数据混乱</li>
+<li>使用 <code>delegatecall</code> 的代理合约要非常小心设计，确保逻辑合约和代理合约的存储结构一致</li>
+<li>不要用 <code>delegatecall</code> 调用不可信合约代码</li>
+</ul>
+<p>详细对比一下以太坊合约中的 <code>delegatecall</code> 和 <code>call</code> 的区别：</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>call</code></th>
+<th><code>delegatecall</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>执行代码位置</strong></td>
+<td>调用目标合约的代码</td>
+<td>调用目标合约的代码</td>
+</tr>
+<tr>
+<td><strong>存储上下文</strong></td>
+<td>使用被调用合约的存储</td>
+<td>使用调用者合约的存储</td>
+</tr>
+<tr>
+<td><strong><code>msg.sender</code></strong></td>
+<td>是当前调用合约的地址（即发起 <code>call</code> 的合约地址）</td>
+<td>保持原始交易发起者地址（即最初调用合约的外部账户地址）</td>
+</tr>
+<tr>
+<td><strong><code>msg.value</code></strong></td>
+<td>可以转账，<code>msg.value</code> 是传递给被调用合约的金额</td>
+<td>也可以转账，<code>msg.value</code> 是传递给被调用合约的金额</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>普通合约间调用，转账等</td>
+<td>代理合约模式，实现逻辑合约升级等</td>
+</tr>
+<tr>
+<td><strong>存储修改影响</strong></td>
+<td>修改的是被调用合约的存储</td>
+<td>修改的是调用者合约的存储</td>
+</tr>
+<tr>
+<td><strong>安全风险</strong></td>
+<td>调用时需信任被调用合约</td>
+<td>存储布局不匹配时极易导致数据破坏</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="简单总结："><a href="#简单总结：" class="headerlink" title="简单总结："></a>简单总结：</h3><ul>
+<li><code>call</code> 是“普通调用”，执行被调用合约的代码和存储，<code>msg.sender</code> 是调用合约地址。</li>
+<li><code>delegatecall</code> 是“代理调用”，执行被调用合约的代码，但使用调用合约的存储和上下文，<code>msg.sender</code> 保持为原始外部账户。</li>
+</ul>
+<hr>
+<h3 id="举个例子帮助理解："><a href="#举个例子帮助理解：" class="headerlink" title="举个例子帮助理解："></a>举个例子帮助理解：</h3><p>假设有三个角色：</p>
+<ul>
+<li>用户（外部账户）A</li>
+<li>代理合约 B</li>
+<li>逻辑合约 C</li>
+</ul>
+<p>用户A调用代理合约 B：</p>
+<ul>
+<li>用call调用逻辑合约 C：<ul>
+<li>代码和存储都在逻辑合约 C</li>
+<li><code>msg.sender</code> 是代理合约 B</li>
+</ul>
+</li>
+<li>用delegatecall调用逻辑合约 C：<ul>
+<li>代码在逻辑合约 C 执行，但存储在代理合约 B</li>
+<li><code>msg.sender</code> 是用户（外部账户）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>也就是说，</p>
+<ul>
+<li>如果用户A通过代理合约B去调用功能合约C的时候用的是call方法的话，那C收到的msg.sender就是B，那C顶多把B的钱转走呀，</li>
+<li>如果用户A通过代理合约B去调用功能合约C的时候用了delegatecall方法的话，那C收到msg.sender就是A，就可以把A的钱给转走啦</li>
+</ul>
 
                 
               </div>
