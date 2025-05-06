@@ -7,8 +7,11 @@
 
 <head>
   <meta charset="UTF-8">
+
   <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
   <link rel="icon" href="/img/fluid.png">
+  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -23,12 +26,12 @@
 <meta property="og:site_name" content="Wang">
 <meta property="og:description" content="17. 库合约 站在巨人的肩膀上库合约是一种特殊的合约，为了提升Solidity代码的复用性和减少gas而存在。库合约是一系列的函数合集，由大神或者项目方创作，咱们站在巨人的肩膀上，会用就行了。  就是py的第三方库  他和普通合约主要有以下几点不同：  不能存在状态变量 不能够继承或被继承 不能接收以太币 不可以被销毁  注意：库合约中的函数可见性如果被设置为public或者external，则">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/web3/stacks2.jpeg">
+<meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-05-05T06:37:09.000Z">
-<meta property="article:modified_time" content="2025-05-06T06:43:47.445Z">
+<meta property="article:modified_time" content="2025-05-06T07:24:03.420Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/web3/stacks2.jpeg">
+<meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -51,11 +54,11 @@
 <!-- 主题依赖的图标库，不要自行修改 -->
 <!-- Do not modify the link that theme dependent icons -->
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
 
 
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
 
 
 <link  rel="stylesheet" href="/css/main.css" />
@@ -72,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"37fd8385820c4abc0e564a2c423b7511","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"37fd8385820c4abc0e564a2c423b7511","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -94,22 +97,6 @@
           var s = document.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(hm, s);
         })();
-      }
-    </script>
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
       }
     </script>
   
@@ -234,7 +221,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/web3/stacks1.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/web3/solidity1.jpeg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -263,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.9k 字
+          6.2k 字
         
       </span>
     
@@ -274,7 +261,7 @@
         
         
         
-          50 分钟
+          52 分钟
         
       </span>
     
@@ -710,6 +697,20 @@
 <li>如果用户A通过代理合约B去调用功能合约C的时候用的是call方法的话，那C收到的msg.sender就是B，那C顶多把B的钱转走呀，</li>
 <li>如果用户A通过代理合约B去调用功能合约C的时候用了delegatecall方法的话，那C收到msg.sender就是A，就可以把A的钱给转走啦</li>
 </ul>
+<h1 id="24-在合约中创建新合约"><a href="#24-在合约中创建新合约" class="headerlink" title="24. 在合约中创建新合约"></a>24. 在合约中创建新合约</h1><p>在以太坊链上，用户（外部账户，<code>EOA</code>）可以创建智能合约，智能合约同样也可以创建新的智能合约。去中心化交易所<code>uniswap</code>就是利用工厂合约（<code>PairFactory</code>）创建了无数个币对合约（<code>Pair</code>）。这一讲，我会用简化版的<code>uniswap</code>讲如何通过合约创建合约。</p>
+<p>有两种方法可以在合约中创建新合约，<code>create</code>和<code>create2</code>，</p>
+<p><code>create</code>的用法很简单，就是<code>new</code>一个合约，并传入新合约构造函数所需的参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">Contract x = new Contract&#123;value: _value&#125;(params)<br></code></pre></td></tr></table></figure>
+
+<h2 id="极简Uniswap"><a href="#极简Uniswap" class="headerlink" title="极简Uniswap"></a>极简Uniswap</h2><p><code>Uniswap V2</code><a target="_blank" rel="noopener" href="https://github.com/Uniswap/v2-core/tree/master/contracts">核心合约</a>中包含两个合约：</p>
+<ol>
+<li>UniswapV2Pair: 币对合约，用于管理币对地址、流动性、买卖。</li>
+<li>UniswapV2Factory: 工厂合约，用于创建新的币对，并管理币对地址。</li>
+</ol>
+<p>下面我们用<code>create</code>方法实现一个极简版的<code>Uniswap</code>：<code>Pair</code>币对合约负责管理币对地址，<code>PairFactory</code>工厂合约用于创建新的币对，并管理币对地址。</p>
+<h3 id="Pair合约"><a href="#Pair合约" class="headerlink" title="Pair合约"></a><code>Pair</code>合约</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Pair&#123;<br>    address public factory; // 工厂合约地址<br>    address public token0; // 代币1<br>    address public token1; // 代币2<br><br>    constructor() payable &#123;<br>        factory = msg.sender;<br>    &#125;<br><br>    // called once by the factory at time of deployment<br>    function initialize(address _token0, address _token1) external &#123;<br>        require(msg.sender == factory, &#x27;UniswapV2: FORBIDDEN&#x27;); // sufficient check<br>        token0 = _token0;<br>        token1 = _token1;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Pair</code>合约很简单，包含3个状态变量：<code>factory</code>，<code>token0</code>和<code>token1</code>。</p>
 
                 
               </div>
@@ -753,7 +754,7 @@
               
                 <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
                   <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
+                    <i class="iconfont icon-cc-by"></i>
                   </span>
                 </a>
               
@@ -935,10 +936,11 @@
       </span>
     
     
-  
-</div>
 
   
+
+</div>
+
   
   
 </div>
@@ -1037,7 +1039,7 @@
 
   
 <script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
     window.anchors.options = {
       placement: CONFIG.anchorjs.placement,
       visible  : CONFIG.anchorjs.visible

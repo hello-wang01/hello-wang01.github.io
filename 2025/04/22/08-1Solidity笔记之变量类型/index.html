@@ -7,8 +7,11 @@
 
 <head>
   <meta charset="UTF-8">
+
   <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
   <link rel="icon" href="/img/fluid.png">
+  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -23,12 +26,12 @@
 <meta property="og:site_name" content="Wang">
 <meta property="og:description" content="Solidity中的变量类型 **值类型(Value Type)**：包括布尔型，整数型等等，这类变量赋值时候直接传递数值。 **引用类型(Reference Type)**：包括数组和结构体，这类变量占空间大，赋值时候直接传递地址（类似指针）。 映射类型(Mapping Type): Solidity中存储键值对的数据结构，可以理解为哈希表  我们将仅介绍常用类型，不常用的类型不会涉及，本篇将介">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/web3/tron3.png">
+<meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-04-22T02:04:31.000Z">
-<meta property="article:modified_time" content="2025-04-28T09:42:08.184Z">
+<meta property="article:modified_time" content="2025-05-06T08:42:56.641Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/web3/tron3.png">
+<meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -51,11 +54,11 @@
 <!-- 主题依赖的图标库，不要自行修改 -->
 <!-- Do not modify the link that theme dependent icons -->
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
 
 
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
 
 
 <link  rel="stylesheet" href="/css/main.css" />
@@ -72,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"37fd8385820c4abc0e564a2c423b7511","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"37fd8385820c4abc0e564a2c423b7511","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -94,22 +97,6 @@
           var s = document.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(hm, s);
         })();
-      }
-    </script>
-  
-
-  
-    <!-- Google tag (gtag.js) -->
-    <script async>
-      if (!Fluid.ctx.dnt) {
-        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', '');
-        });
       }
     </script>
   
@@ -234,7 +221,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/web3/tron4.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/web3/solidity1.jpeg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -263,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.2k 字
+          6.4k 字
         
       </span>
     
@@ -274,7 +261,7 @@
         
         
         
-          52 分钟
+          54 分钟
         
       </span>
     
@@ -419,7 +406,42 @@
 <li><p><code>&lt;function body&gt;</code>: 函数体。</p>
 </li>
 </ol>
-<h2 id="到底什么是-Pure-和View？"><a href="#到底什么是-Pure-和View？" class="headerlink" title="到底什么是 Pure 和View？"></a>到底什么是 <code>Pure</code> 和<code>View</code>？</h2><p>刚开始学习 <code>solidity</code> 时，<code>pure</code> 和 <code>view</code> 关键字可能令人费解，因为其他编程语言中没有类似的关键字。<code>solidity</code> 引入这两个关键字主要是因为 以太坊交易需要支付气费（gas fee）。合约的状态变量存储在链上，gas fee 很贵，如果计算不改变链上状态，就可以不用付 <code>gas</code>。包含 <code>pure</code> 和 <code>view</code> 关键字的函数是不改写链上状态的，因此用户直接调用它们是不需要付 gas 的（注意，合约中非 <code>pure</code>&#x2F;<code>view</code> 函数调用 <code>pure</code>&#x2F;<code>view</code> 函数时需要付gas）。</p>
+<h2 id="Solidity-函数可见性关键字"><a href="#Solidity-函数可见性关键字" class="headerlink" title="Solidity 函数可见性关键字"></a>Solidity 函数可见性关键字</h2><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>说明</th>
+<th>谁能调用</th>
+<th>访问方式示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>public</code></td>
+<td>函数对所有人可见，既可以内部调用，也可以外部调用</td>
+<td>合约内部、派生合约、合约外部</td>
+<td>直接调用、合约外部调用</td>
+</tr>
+<tr>
+<td><code>external</code></td>
+<td>函数只能被合约外部调用，不能用 <code>this.xxx()</code> 形式内部调用（但可以通过低级调用调用）</td>
+<td>合约外部调用</td>
+<td>合约外部调用，不能内部普通调用</td>
+</tr>
+<tr>
+<td><code>internal</code></td>
+<td>函数只能在合约内部或派生合约中调用</td>
+<td>合约内部、派生合约</td>
+<td>内部调用、继承合约调用</td>
+</tr>
+<tr>
+<td><code>private</code></td>
+<td>函数只能在定义它的合约内部调用，派生合约也不能访问</td>
+<td>仅合约内部</td>
+<td>仅合约内部调用</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="详细说明"><a href="#详细说明" class="headerlink" title="详细说明"></a>详细说明</h2><h2 id="到底什么是-Pure-和View？"><a href="#到底什么是-Pure-和View？" class="headerlink" title="到底什么是 Pure 和View？"></a>到底什么是 <code>Pure</code> 和<code>View</code>？</h2><p>刚开始学习 <code>solidity</code> 时，<code>pure</code> 和 <code>view</code> 关键字可能令人费解，因为其他编程语言中没有类似的关键字。<code>solidity</code> 引入这两个关键字主要是因为 以太坊交易需要支付气费（gas fee）。合约的状态变量存储在链上，gas fee 很贵，如果计算不改变链上状态，就可以不用付 <code>gas</code>。包含 <code>pure</code> 和 <code>view</code> 关键字的函数是不改写链上状态的，因此用户直接调用它们是不需要付 gas 的（注意，合约中非 <code>pure</code>&#x2F;<code>view</code> 函数调用 <code>pure</code>&#x2F;<code>view</code> 函数时需要付gas）。</p>
 <p>在以太坊中，以下语句被视为修改链上状态：</p>
 <ol>
 <li>写入状态变量。</li>
@@ -697,7 +719,7 @@
               
                 <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
                   <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
+                    <i class="iconfont icon-cc-by"></i>
                   </span>
                 </a>
               
@@ -716,9 +738,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/04/22/08-1Solidity%E7%AC%94%E8%AE%B0/" title="Solidity笔记之基础变量">
+                      <a href="/2025/04/28/08-2Solidity%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/" title="08-2Solidity笔记之二">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Solidity笔记之基础变量</span>
+                        <span class="hidden-mobile">08-2Solidity笔记之二</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -726,8 +748,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/03/13/07-8TRON%E6%B3%A2%E5%9C%BA%E9%92%B1%E5%8C%85%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/" title="07-8TRON波场钱包开发流程">
-                        <span class="hidden-mobile">07-8TRON波场钱包开发流程</span>
+                      <a href="/2025/04/22/08-1Solidity%E7%AC%94%E8%AE%B0/" title="Solidity笔记之基础变量">
+                        <span class="hidden-mobile">Solidity笔记之基础变量</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -885,10 +907,11 @@
       </span>
     
     
-  
-</div>
 
   
+
+</div>
+
   
   
 </div>
@@ -987,7 +1010,7 @@
 
   
 <script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
     window.anchors.options = {
       placement: CONFIG.anchorjs.placement,
       visible  : CONFIG.anchorjs.visible
