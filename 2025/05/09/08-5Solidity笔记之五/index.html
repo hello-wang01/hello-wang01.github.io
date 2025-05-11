@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-05-09T11:02:27.000Z">
-<meta property="article:modified_time" content="2025-05-10T09:30:42.064Z">
+<meta property="article:modified_time" content="2025-05-11T07:24:22.404Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.5k 字
+          2k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          13 分钟
+          17 分钟
         
       </span>
     
@@ -331,6 +331,31 @@
 <li><code>amountAllowed</code>设定每次能领取代币数量（默认为<code>100</code>，不是一百枚，因为代币有小数位数）。</li>
 <li><code>tokenContract</code>记录发放的<code>ERC20</code>代币合约地址。</li>
 <li><code>requestedAddress</code>记录领取过代币的地址。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Faucet&#123;<br>    // 我们定义三个变量<br>    // amuntAllowed 设定每次能领取代币数量(默认为100，不是100枚，因为代币有小数位数)<br>    // tokenContract 记录发放的ERC20代币合约地址<br>    // requestedAddress 记录领取过代币的地址<br>    uint256 public amuntAllowed = 100;<br>    address public tokenContract;<br>    mapping (address=&gt;bool) public requestedAddress;<br>    // 定义一个事件，来记录每次领取代币的地址和数量，再requestTokens()函数被调用时释放<br>    event SendToken(address indexed Receiver,uint256 indexed Amount);<br>    // 构造函数，用来初始化tokenContract 状态变量，确定发放的ERC20代币地址<br>    constructor(address _tokenContract)&#123;<br>        tokenContract=_tokenContract;<br>    &#125;<br>    // 领取代币函数<br>    function requestTokens()external  &#123;<br>        require(!requestedAddress[msg.sender],&quot;Can&#x27;t Request Multiple Times!&quot;);<br>        IERC20 token =IERC20(tokenContract);// token 是一个IERC20遍量<br>        require(token.balanceOf(address(this))&gt;=amuntAllowed,&quot;Faucet Empty!&quot;);//校验水龙头是否空了<br>        token.transfer(msg.sender, amuntAllowed); // 发送100代币<br>        requestedAddress[msg.sender]=true;<br>        emit SendToken(msg.sender,amuntAllowed);<br><br>    &#125;<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="33-空投合约"><a href="#33-空投合约" class="headerlink" title="33. 空投合约"></a>33. 空投合约</h1><h3 id="空投代币合约"><a href="#空投代币合约" class="headerlink" title="空投代币合约"></a>空投代币合约</h3><p><code>Airdrop</code>空投合约逻辑非常简单：利用循环，一笔交易将<code>ERC20</code>代币发送给多个地址。合约中包含两个函数</p>
+<ul>
+<li><p><code>getSum()</code>函数：返回<code>uint</code>数组的和。</p>
+</li>
+<li><p><code>multiTransferToken()</code>函数：发送<code>ERC20</code>代币空投，包含<code>3</code>个参数：</p>
+<ul>
+<li><p><code>_token</code>：代币合约地址（<code>address</code>类型）</p>
+</li>
+<li><p><code>_addresses</code>：接收空投的用户地址数组（<code>address[]</code>类型）</p>
+</li>
+<li><p><code>_amounts</code>：空投数量数组，对应<code>_addresses</code>里每个地址的数量（<code>uint[]</code>类型）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>该函数有两个检查：第一个<code>require</code>检查了<code>_addresses</code>和<code>_amounts</code>两个数组长度是否相等；第二个<code>require</code>检查了空投合约的授权额度大于要空投的代币数量总和。</p>
+<p><code>multiTransferETH()</code>函数：发送<code>ETH</code>空投，包含<code>2</code>个参数：</p>
+<ul>
+<li><code>_addresses</code>：接收空投的用户地址数组（<code>address[]</code>类型）</li>
+<li><code>_amounts</code>：空投数量数组，对应<code>_addresses</code>里每个地址的数量（<code>uint[]</code>类型）</li>
 </ul>
 
                 
