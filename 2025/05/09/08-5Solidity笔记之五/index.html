@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-05-09T11:02:27.000Z">
-<meta property="article:modified_time" content="2025-05-12T11:21:12.664Z">
+<meta property="article:modified_time" content="2025-05-12T16:59:25.064Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.5k 字
+          3.3k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          21 分钟
+          28 分钟
         
       </span>
     
@@ -367,6 +367,36 @@
 <p><code>ERC</code>全称 Ethereum Request For Comment (以太坊意见征求稿), 用以记录以太坊上应用级的各种开发标准和协议。如典型的Token标准(<code>ERC20</code>, <code>ERC721</code>)、名字注册(<code>ERC26</code>, <code>ERC13</code>), URI范式(<code>ERC67</code>), Library&#x2F;Package格式(<code>EIP82</code>), 钱包格式(<code>EIP75</code>,<code>EIP85</code>)。</p>
 <p>ERC协议标准是影响以太坊发展的重要因素, 像<code>ERC20</code>, <code>ERC223</code>, <code>ERC721</code>, <code>ERC777</code>等, 都是对以太坊生态产生了很大影响。</p>
 <p>所以最终结论：<code>EIP</code>包含<code>ERC</code>。</p>
+<h2 id="IERC721"><a href="#IERC721" class="headerlink" title="IERC721"></a>IERC721</h2><h2 id="ERC165"><a href="#ERC165" class="headerlink" title="ERC165"></a>ERC165</h2><p>通过<a target="_blank" rel="noopener" href="https://eips.ethereum.org/EIPS/eip-165">ERC165标准</a>，智能合约可以声明它支持的接口，供其他合约检查。简单的说，ERC165就是检查一个智能合约是不是支持了<code>ERC721</code>，<code>ERC1155</code>的接口。</p>
+<p><code>IERC165</code>接口合约只声明了一个<code>supportsInterface</code>函数，输入要查询的<code>interfaceId</code>接口id，若合约实现了该接口id，则返回<code>true</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">interface IERC165 &#123;<br>    /**<br>     * @dev 如果合约实现了查询的`interfaceId`，则返回true<br>     * 规则详见：https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]<br>     *<br>     */<br>    function supportsInterface(bytes4 interfaceId) external view returns (bool);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>IERC721</code>是<code>ERC721</code>标准的接口合约，规定了<code>ERC721</code>要实现的基本函数。它利用<code>tokenId</code>来表示特定的非同质化代币，授权或转账都要明确<code>tokenId</code>；而<code>ERC20</code>只需要明确转账的数额即可。</p>
+<h2 id="IERC721-1"><a href="#IERC721-1" class="headerlink" title="IERC721"></a>IERC721</h2><p><code>IERC721</code>是<code>ERC721</code>标准的接口合约，规定了<code>ERC721</code>要实现的基本函数。它利用<code>tokenId</code>来表示特定的非同质化代币，授权或转账都要明确<code>tokenId</code>；而<code>ERC20</code>只需要明确转账的数额即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.21;<br><br><br>import &quot;./34_IERC165.sol&quot;;<br>interface IERC721 is IERC165 &#123;<br>    // 转账事件<br>    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);<br>    // 授权事件<br>    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);<br>    // 批量授权事件<br>    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);<br>    // 查询余额<br>    function balanceOf(address owner) external view returns (uint256 balance);<br>    // 查询拥有者--通过tokenid<br>    function ownerOf(uint256 tokenId) external view returns (address owner);<br><br>    <br>    // 安全转账的重载函数，参数里面包含了data<br>    function safeTransferFrom(<br>        address from,<br>        address to,<br>        uint256 tokenId,<br>        bytes calldata data<br>    ) external;<br>    // 安全转账，（如果接收方是合约地址，会要求实现 ERC721Receiver)<br>    function safeTransferFrom(<br>        address from,<br>        address to,<br>        uint256 tokenId<br>    ) external;<br><br>    // 普通的转账，参数为转出地址from 接受地址，和tokenid<br>    function transferFrom(<br>        address from,<br>        address to,<br>        uint256 tokenId<br>    ) external;<br>    // 授权另一个地址使用我的NFT ,参数为被授权地址和tokenid<br>    function approve(address to, uint256 tokenId) external;<br><br>    // 批量授权给某个地址<br>    function setApprovalForAll(address operator, bool _approved) external;<br><br>    // 获取某个tokenid 的授权<br>    function getApproved(uint256 tokenId) external view returns (address operator);<br><br>    // 查询某地址的NFT是否批量授权给另一个地址，传入拥有者和操作者<br>    function isApprovedForAll(address owner, address operator) external view returns (bool);<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="IERC721事件"><a href="#IERC721事件" class="headerlink" title="IERC721事件"></a>IERC721事件</h3><p><code>IERC721</code>包含3个事件，其中<code>Transfer</code>和<code>Approval</code>事件在<code>ERC20</code>中也有。</p>
+<ul>
+<li><code>Transfer</code>事件：在转账时被释放，记录代币的发出地址<code>from</code>，接收地址<code>to</code>和<code>tokenid</code>。</li>
+<li><code>Approval</code>事件：在授权时释放，记录授权地址<code>owner</code>，被授权地址<code>approved</code>和<code>tokenid</code>。</li>
+<li><code>ApprovalForAll</code>事件：在批量授权时释放，记录批量授权的发出地址<code>owner</code>，被授权地址<code>operator</code>和授权与否的<code>approved</code>。</li>
+</ul>
+<h3 id="IERC721函数"><a href="#IERC721函数" class="headerlink" title="IERC721函数"></a>IERC721函数</h3><ul>
+<li><code>balanceOf</code>：返回某地址的NFT持有量<code>balance</code>。</li>
+<li><code>ownerOf</code>：返回某<code>tokenId</code>的主人<code>owner</code>。</li>
+<li><code>transferFrom</code>：普通转账，参数为转出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
+<li><code>safeTransferFrom</code>：安全转账（如果接收方是合约地址，会要求实现<code>ERC721Receiver</code>接口）。参数为转出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
+<li><code>approve</code>：授权另一个地址使用你的NFT。参数为被授权地址<code>approve</code>和<code>tokenId</code>。</li>
+<li><code>getApproved</code>：查询<code>tokenId</code>被批准给了哪个地址。</li>
+<li><code>setApprovalForAll</code>：将自己持有的该系列NFT批量授权给某个地址<code>operator</code>。</li>
+<li><code>isApprovedForAll</code>：查询某地址的NFT是否批量授权给了另一个<code>operator</code>地址。</li>
+<li><code>safeTransferFrom</code>：安全转账的重载函数，参数里面包含了<code>data</code>。</li>
+</ul>
+<h2 id="IERC721Receiver"><a href="#IERC721Receiver" class="headerlink" title="IERC721Receiver"></a>IERC721Receiver</h2><p>如果一个合约没有实现<code>ERC721</code>的相关函数，转入的<code>NFT</code>就进了黑洞，永远转不出来了。为了防止误转账，<code>ERC721</code>实现了<code>safeTransferFrom()</code>安全转账函数，目标合约必须实现了<code>IERC721Receiver</code>接口才能接收<code>ERC721</code>代币，不然会<code>revert</code>。<code>IERC721Receiver</code>接口只包含一个<code>onERC721Received()</code>函数。</p>
 
                 
               </div>
