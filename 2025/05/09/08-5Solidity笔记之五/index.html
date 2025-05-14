@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-05-09T11:02:27.000Z">
-<meta property="article:modified_time" content="2025-05-12T16:59:25.064Z">
+<meta property="article:modified_time" content="2025-05-14T08:15:52.567Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.3k 字
+          3.5k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          28 分钟
+          30 分钟
         
       </span>
     
@@ -361,7 +361,7 @@
 
 
 
-<h1 id="34-ERC721"><a href="#34-ERC721" class="headerlink" title="34. ERC721"></a>34. ERC721</h1><h2 id="EIP与ERC"><a href="#EIP与ERC" class="headerlink" title="EIP与ERC"></a>EIP与ERC</h2><p>这里有一个点需要理解，本节标题是<code>ERC721</code>，这里又提到了<code>EIP721</code>,这两个是什么关系呢？</p>
+<h1 id="34-ERC721【NFT】"><a href="#34-ERC721【NFT】" class="headerlink" title="34. ERC721【NFT】"></a>34. ERC721【NFT】</h1><h2 id="EIP与ERC"><a href="#EIP与ERC" class="headerlink" title="EIP与ERC"></a>EIP与ERC</h2><p>这里有一个点需要理解，本节标题是<code>ERC721</code>，这里又提到了<code>EIP721</code>,这两个是什么关系呢？</p>
 <p><code>EIP</code>全称 <code>Ethereum Improvement Proposals</code>(以太坊改进建议), 是以太坊开发者社区提出的改进建议, 是一系列以编号排定的文件, 类似互联网上IETF的RFC。</p>
 <p><code>EIP</code>可以是 <code>Ethereum</code> 生态中任意领域的改进, 比如新特性、ERC、协议改进、编程工具等等。</p>
 <p><code>ERC</code>全称 Ethereum Request For Comment (以太坊意见征求稿), 用以记录以太坊上应用级的各种开发标准和协议。如典型的Token标准(<code>ERC20</code>, <code>ERC721</code>)、名字注册(<code>ERC26</code>, <code>ERC13</code>), URI范式(<code>ERC67</code>), Library&#x2F;Package格式(<code>EIP82</code>), 钱包格式(<code>EIP75</code>,<code>EIP85</code>)。</p>
@@ -377,15 +377,13 @@
 
 
 
-
-
-<h3 id="IERC721事件"><a href="#IERC721事件" class="headerlink" title="IERC721事件"></a>IERC721事件</h3><p><code>IERC721</code>包含3个事件，其中<code>Transfer</code>和<code>Approval</code>事件在<code>ERC20</code>中也有。</p>
+<h3 id="IERC721中的事件"><a href="#IERC721中的事件" class="headerlink" title="IERC721中的事件"></a>IERC721中的事件</h3><p><code>IERC721</code>包含3个事件，其中<code>Transfer</code>和<code>Approval</code>事件在<code>ERC20</code>中也有。</p>
 <ul>
 <li><code>Transfer</code>事件：在转账时被释放，记录代币的发出地址<code>from</code>，接收地址<code>to</code>和<code>tokenid</code>。</li>
 <li><code>Approval</code>事件：在授权时释放，记录授权地址<code>owner</code>，被授权地址<code>approved</code>和<code>tokenid</code>。</li>
 <li><code>ApprovalForAll</code>事件：在批量授权时释放，记录批量授权的发出地址<code>owner</code>，被授权地址<code>operator</code>和授权与否的<code>approved</code>。</li>
 </ul>
-<h3 id="IERC721函数"><a href="#IERC721函数" class="headerlink" title="IERC721函数"></a>IERC721函数</h3><ul>
+<h3 id="IERC721中的函数"><a href="#IERC721中的函数" class="headerlink" title="IERC721中的函数"></a>IERC721中的函数</h3><ul>
 <li><code>balanceOf</code>：返回某地址的NFT持有量<code>balance</code>。</li>
 <li><code>ownerOf</code>：返回某<code>tokenId</code>的主人<code>owner</code>。</li>
 <li><code>transferFrom</code>：普通转账，参数为转出地址<code>from</code>，接收地址<code>to</code>和<code>tokenId</code>。</li>
@@ -397,6 +395,22 @@
 <li><code>safeTransferFrom</code>：安全转账的重载函数，参数里面包含了<code>data</code>。</li>
 </ul>
 <h2 id="IERC721Receiver"><a href="#IERC721Receiver" class="headerlink" title="IERC721Receiver"></a>IERC721Receiver</h2><p>如果一个合约没有实现<code>ERC721</code>的相关函数，转入的<code>NFT</code>就进了黑洞，永远转不出来了。为了防止误转账，<code>ERC721</code>实现了<code>safeTransferFrom()</code>安全转账函数，目标合约必须实现了<code>IERC721Receiver</code>接口才能接收<code>ERC721</code>代币，不然会<code>revert</code>。<code>IERC721Receiver</code>接口只包含一个<code>onERC721Received()</code>函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// IERC721Receiver<br>// ERC721接收者接口：合约必须实现这个接口来通过安全转账接收ERC721<br>interface IERC721Receiver &#123;<br>    function onERC721Received(<br>        address operator,<br>        address from,<br>        uint tokenId,<br>        bytes calldata data<br>    ) external returns (bytes4);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面就是<code>ERC721</code> 利用<code>_checkOnERC721Received</code>来确保目标合约实现了<code>onERC721Received()</code>函数（返回<code>onERC721Received</code>的<code>selector</code>）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function _checkOnERC721Received(<br>    address operator,<br>    address from,<br>    address to,<br>    uint256 tokenId,<br>    bytes memory data<br>) internal &#123;<br>    if (to.code.length &gt; 0) &#123;<br>        try IERC721Receiver(to).onERC721Received(operator, from, tokenId, data) returns (bytes4 retval) &#123;<br>            if (retval != IERC721Receiver.onERC721Received.selector) &#123;<br>                // Token rejected<br>                revert IERC721Errors.ERC721InvalidReceiver(to);<br>            &#125;<br>        &#125; catch (bytes memory reason) &#123;<br>            if (reason.length == 0) &#123;<br>                // non-IERC721Receiver implementer<br>                revert IERC721Errors.ERC721InvalidReceiver(to);<br>            &#125; else &#123;<br>                /// @solidity memory-safe-assembly<br>                assembly &#123;<br>                    revert(add(32, reason), mload(reason))<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="IERC721Metadata"><a href="#IERC721Metadata" class="headerlink" title="IERC721Metadata"></a>IERC721Metadata</h2><p><code>IERC721Metadata</code>是<code>ERC721</code>的拓展接口，实现了3个查询<code>metadata</code>元数据的常用函数：</p>
+<ul>
+<li><code>name()</code>：返回代币名称。</li>
+<li><code>symbol()</code>：返回代币代号。</li>
+<li><code>tokenURI()</code>：通过<code>tokenId</code>查询<code>metadata</code>的链接<code>url</code>，<code>ERC721</code>特有的函数。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">interface IERC721Metadata is IERC721 &#123;<br>    function name() external view returns (string memory);<br><br>    function symbol() external view returns (string memory);<br><br>    function tokenURI(uint256 tokenId) external view returns (string memory);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="ERC721主合约"><a href="#ERC721主合约" class="headerlink" title="ERC721主合约"></a>ERC721主合约</h2><p><code>ERC721</code>主合约实现了<code>IERC721</code>，<code>IERC165</code>和<code>IERC721Metadata</code>定义的所有功能，包含<code>4</code>个状态变量和<code>17</code>个函数。实现都比较简单，每个函数的功能见代码注释：</p>
 
                 
               </div>
