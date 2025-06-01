@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-05-09T11:02:27.000Z">
-<meta property="article:modified_time" content="2025-05-31T14:37:28.236Z">
+<meta property="article:modified_time" content="2025-06-01T10:15:19.171Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -261,7 +261,7 @@
         
         
         
-          98 分钟
+          101 分钟
         
       </span>
     
@@ -622,6 +622,23 @@
 </ul>
 <p>尽管如此，由于这种方法是最便捷的链上随机数生成方法，大量项目方依靠它来生成不安全的随机数，包括知名的项目<code>meebits</code>，<code>loots</code>等。当然，这些项目也无一例外的被<a target="_blank" rel="noopener" href="https://forum.openzeppelin.com/t/understanding-the-meebits-exploit/8281">攻击</a>了：攻击者可以铸造任何他们想要的稀有<code>NFT</code>，而非随机抽取。</p>
 <h2 id="链下随机数生成"><a href="#链下随机数生成" class="headerlink" title="链下随机数生成"></a>链下随机数生成</h2><p>我们可以在链下生成随机数，然后通过预言机把随机数上传到链上。<code>Chainlink</code>提供<code>VRF</code>（可验证随机函数）服务，链上开发者可以支付<code>LINK</code>代币来获取随机数。<code> Chainlink VRF</code>有两个版本，第二个版本需要官网注册并预付费，比第一个版本多许多操作，需要花费更多的gas，但取消订阅后可以拿回剩余的Link，这里介绍第二个版本<code>Chainlink VRF V2</code>。</p>
+<p><img src="/img/web3/39-1.png" srcset="/img/loading.gif" lazyload alt="39-1"></p>
+<p>我们将用一个简单的合约介绍使用<code>Chainlink VRF</code>的步骤。<code>RandomNumberConsumer</code>合约可以向<code>VRF</code>请求随机数，并存储在状态变量<code>randomWords</code>中。</p>
+<p><strong>1. 申请Subscription并转入<code>Link</code>代币’</strong></p>
+<p>在Chainlink VRF网站<a target="_blank" rel="noopener" href="https://vrf.chain.link/">这里</a>上创建一个<code>Subscription</code>，其中邮箱和项目名都是选填</p>
+<p>创建完成后往<code>Subscription</code>中转入一些<code>Link</code>代币。测试网的<code>LINK</code>代币可以从<a target="_blank" rel="noopener" href="https://faucets.chain.link/">LINK水龙头</a>领取。</p>
+<p><strong>2. 用户合约继承<code>VRFConsumerBaseV2</code></strong></p>
+<p>为了使用<code>VRF</code>获取随机数，合约需要继承<code>VRFConsumerBaseV2</code>合约，并在构造函数中初始化<code>VRFCoordinatorV2Interface</code>和<code>Subscription Id</code>。</p>
+<p><strong>注意:</strong> 不同链对应不同的参数，在<a target="_blank" rel="noopener" href="https://docs.chain.link/vrf/v2/subscription/supported-networks">这里</a>查询。</p>
+<p>教程中我们使用<code>Sepolia</code>测试网。</p>
+<p><strong>2. 用户合约申请随机数</strong></p>
+<p>用户可以调用从<code>VRFCoordinatorV2Interface</code>接口合约中的<code>requestRandomWords</code>函数申请随机数，并返回申请标识符<code>requestId</code>。这个申请会传递给<code>VRF</code>合约。</p>
+<p><strong>注意:</strong> 合约部署后，需要把合约加入到<code>Subscription</code>的<code>Consumers</code>中，才能发送申请。也就是相当于添加白名单一样</p>
+<p><strong>3. <code>Chainlink</code>节点链下生成随机数和<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/37_Signature/readme.md">数字签名</a>，并发送给<code>VRF</code>合约</strong></p>
+<p><strong>4. <code>VRF</code>合约验证签名有效性</strong></p>
+<p><strong>5. 用户合约接收并使用随机数</strong></p>
+<p>在<code>VRF</code>合约验证签名有效之后，会自动调用用户合约的回退函数<code>fulfillRandomness()</code>，将链下生成的随机数发送过来。用户要把消耗随机数的逻辑写在这里。</p>
+<p><strong>注意:</strong> 用户申请随机数时调用的<code>requestRandomness()</code>和<code>VRF</code>合约返回随机数时调用的回退函数<code>fulfillRandomness()</code>是两笔交易，调用者分别是用户合约和<code>VRF</code>合约，后者比前者晚几分钟（不同链延迟不一样）。</p>
 
                 
               </div>
