@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-06-04T11:50:46.000Z">
-<meta property="article:modified_time" content="2025-06-05T13:44:49.965Z">
+<meta property="article:modified_time" content="2025-06-06T10:27:59.522Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8k 字
+          11k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          67 分钟
+          89 分钟
         
       </span>
     
@@ -566,7 +566,127 @@
 <p><img src="/img/web3/49-1.png" srcset="/img/loading.gif" lazyload alt="49-1"></p>
 <h2 id="UUPS合约"><a href="#UUPS合约" class="headerlink" title="UUPS合约"></a>UUPS合约</h2><p>首先我们要复习一下<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/23_Delegatecall/readme.md">WTF Solidity极简教程第23讲：Delegatecall</a>。如果用户A通过合约B（代理合约）去<code>delegatecall</code>合约C（逻辑合约），上下文仍是合约B的上下文，<code>msg.sender</code>仍是用户A而不是合约B。因此，UUPS合约可以将升级函数放在逻辑合约中，并检查调用者是否为管理员。</p>
 <p><img src="/img/web3/49-2.png" srcset="/img/loading.gif" lazyload alt="49-2"></p>
+<h3 id="UUPS的代理合约"><a href="#UUPS的代理合约" class="headerlink" title="UUPS的代理合约"></a>UUPS的代理合约</h3><p>UUPS的代理合约看起来像是个不可升级的代理合约，非常简单，因为升级函数被放在了逻辑合约中。它包含<code>3</code>个变量：</p>
+<ul>
+<li><code>implementation</code>：逻辑合约地址。</li>
+<li><code>admin</code>：admin地址。</li>
+<li><code>words</code>：字符串，可以通过逻辑合约的函数改变。</li>
+</ul>
+<p>它包含<code>2</code>个函数</p>
+<ul>
+<li>构造函数：初始化admin和逻辑合约地址。</li>
+<li><code>fallback()</code>：回调函数，将调用委托给逻辑合约。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs kotlin">contract UUPSProxy &#123;<br>    address <span class="hljs-keyword">public</span> implementation; <span class="hljs-comment">// 逻辑合约地址</span><br>    address <span class="hljs-keyword">public</span> admin; <span class="hljs-comment">// admin地址</span><br>    string <span class="hljs-keyword">public</span> words; <span class="hljs-comment">// 字符串，可以通过逻辑合约的函数改变</span><br><br>    <span class="hljs-comment">// 构造函数，初始化admin和逻辑合约地址</span><br>    <span class="hljs-keyword">constructor</span>(address _implementation)&#123;<br>        admin = msg.sender;<br>        implementation = _implementation;<br>    &#125;<br><br>    <span class="hljs-comment">// fallback函数，将调用委托给逻辑合约</span><br>    fallback() <span class="hljs-keyword">external</span> payable &#123;<br>        (bool success, bytes memory <span class="hljs-keyword">data</span>) = implementation.delegatecall(msg.<span class="hljs-keyword">data</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+
+
+<h3 id="UUPS的逻辑合约"><a href="#UUPS的逻辑合约" class="headerlink" title="UUPS的逻辑合约"></a>UUPS的逻辑合约</h3><p>UUPS的逻辑合约与<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/47_Upgrade/readme.md">第47讲</a>中的不同是多了个升级函数。UUPS逻辑合约包含<code>3</code>个状态变量，与代理合约保持一致，防止插槽冲突。它包含<code>2</code>个</p>
+<ul>
+<li><code>upgrade()</code>：升级函数，将改变逻辑合约地址<code>implementation</code>，只能由<code>admin</code>调用。</li>
+<li><code>foo()</code>：旧UUPS逻辑合约会将<code>words</code>的值改为<code>&quot;old&quot;</code>，新的会改为<code>&quot;new&quot;</code>。</li>
+</ul>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs haxe"><span class="hljs-comment">// UUPS逻辑合约（升级函数写在逻辑合约内）</span><br>contract UUPS1&#123;<br>    <span class="hljs-comment">// 状态变量和proxy合约一致，防止插槽冲突</span><br>    address <span class="hljs-keyword">public</span> implementation; <br>    address <span class="hljs-keyword">public</span> admin; <br>    string <span class="hljs-keyword">public</span> words; <span class="hljs-comment">// 字符串，可以通过逻辑合约的函数改变</span><br><br>    <span class="hljs-comment">// 改变proxy中状态变量，选择器： 0xc2985578</span><br>    <span class="hljs-title function_"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span></span>() <span class="hljs-keyword">public</span>&#123;<br>        words = <span class="hljs-string">&quot;old&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 升级函数，改变逻辑合约地址，只能由admin调用。选择器：0x0900f010</span><br>    <span class="hljs-comment">// UUPS中，逻辑合约中必须包含升级函数，不然就不能再升级了。</span><br>    <span class="hljs-title function_"><span class="hljs-keyword">function</span> <span class="hljs-title">upgrade</span></span>(address <span class="hljs-keyword">new</span><span class="hljs-type">Implementation</span>) external &#123;<br>        require(msg.sender == admin);<br>        implementation = <span class="hljs-keyword">new</span><span class="hljs-type">Implementation</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 新的UUPS逻辑合约</span><br>contract UUPS2&#123;<br>    <span class="hljs-comment">// 状态变量和proxy合约一致，防止插槽冲突</span><br>    address <span class="hljs-keyword">public</span> implementation; <br>    address <span class="hljs-keyword">public</span> admin; <br>    string <span class="hljs-keyword">public</span> words; <span class="hljs-comment">// 字符串，可以通过逻辑合约的函数改变</span><br><br>    <span class="hljs-comment">// 改变proxy中状态变量，选择器： 0xc2985578</span><br>    <span class="hljs-title function_"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span></span>() <span class="hljs-keyword">public</span>&#123;<br>        words = <span class="hljs-string">&quot;new&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 升级函数，改变逻辑合约地址，只能由admin调用。选择器：0x0900f010</span><br>    <span class="hljs-comment">// UUPS中，逻辑合约中必须包含升级函数，不然就不能再升级了。</span><br>    <span class="hljs-title function_"><span class="hljs-keyword">function</span> <span class="hljs-title">upgrade</span></span>(address <span class="hljs-keyword">new</span><span class="hljs-type">Implementation</span>) external &#123;<br>        require(msg.sender == admin);<br>        implementation = <span class="hljs-keyword">new</span><span class="hljs-type">Implementation</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="Remix实现"><a href="#Remix实现" class="headerlink" title="Remix实现"></a><code>Remix</code>实现</h2><ol>
+<li>部署UUPS新旧逻辑合约<code>UUPS1</code>和<code>UUPS2</code>。</li>
+</ol>
+<p><img src="/img/web3/49-3.jpg" srcset="/img/loading.gif" lazyload alt="49-3"></p>
+<ol start="2">
+<li>部署UUPS代理合约<code>UUPSProxy</code>，将<code>implementation</code>地址指向旧逻辑合约<code>UUPS1</code>。</li>
+</ol>
+<p><img src="/img/web3/49-4.jpg" srcset="/img/loading.gif" lazyload alt="49-4"></p>
+<ol start="3">
+<li>利用选择器<code>0xc2985578</code>，在代理合约中调用旧逻辑合约<code>UUPS1</code>的<code>foo()</code>函数，将<code>words</code>的值改为<code>&quot;old&quot;</code>。</li>
+</ol>
+<p><img src="/img/web3/49-5.jpg" srcset="/img/loading.gif" lazyload alt="49-5"></p>
+<ol start="4">
+<li>利用在线ABI编码器<a target="_blank" rel="noopener" href="https://abi.hashex.org/">HashEx</a>获得二进制编码，调用升级函数<code>upgrade()</code>，将<code>implementation</code>地址指向新逻辑合约<code>UUPS2</code>。</li>
+</ol>
+<p><img src="/img/web3/49-31.png" srcset="/img/loading.gif" lazyload alt="49-3"></p>
+<p><img src="/img/web3/49-6.jpg" srcset="/img/loading.gif" lazyload alt="49-6"></p>
+<ol start="5">
+<li>利用选择器<code>0xc2985578</code>，在代理合约中调用新逻辑合约<code>UUPS2</code>的<code>foo()</code>函数，将<code>words</code>的值改为<code>&quot;new&quot;</code>。</li>
+</ol>
+<p><img src="/img/web3/49-7.jpg" srcset="/img/loading.gif" lazyload alt="49-6"></p>
+<h1 id="50-多签钱包"><a href="#50-多签钱包" class="headerlink" title="50. 多签钱包"></a>50. 多签钱包</h1><h2 id="多签钱包"><a href="#多签钱包" class="headerlink" title="多签钱包"></a>多签钱包</h2><p>多签钱包是一种电子钱包，特点是交易被多个私钥持有者（多签人）授权后才能执行：例如钱包由<code>3</code>个多签人管理，每笔交易需要至少<code>2</code>人签名授权。多签钱包可以防止单点故障（私钥丢失，单人作恶），更加去中心化，更加安全，被很多DAO采用。</p>
+<p>Gnosis Safe多签钱包是以太坊最流行的多签钱包，管理近400亿美元资产，合约经过审计和实战测试，支持多链（以太坊，BSC，Polygon等），并提供丰富的DAPP支持。更多信息可以阅读我在21年12月写的<a target="_blank" rel="noopener" href="https://peopledao.mirror.xyz/nFCBXda8B5ZxQVqSbbDOn2frFDpTxNVtdqVBXGIjj0s">Gnosis Safe使用教程</a>。</p>
+<h2 id="多签钱包合约"><a href="#多签钱包合约" class="headerlink" title="多签钱包合约"></a>多签钱包合约</h2><p>在以太坊上的多签钱包其实是智能合约，属于合约钱包。下面我们写一个极简版多签钱包<code>MultisigWallet</code>合约，它的逻辑非常简单：</p>
+<ol>
+<li><p>设置多签人和门槛（链上）：部署多签合约时，我们需要初始化多签人列表和执行门槛（至少n个多签人签名授权后，交易才能执行）。Gnosis Safe多签钱包支持增加&#x2F;删除多签人以及改变执行门槛，但在咱们的极简版中不考虑这一功能。</p>
+</li>
+<li><p>创建交易（链下）：一笔待授权的交易包含以下内容</p>
+<ul>
+<li><code>to</code>：目标合约。</li>
+<li><code>value</code>：交易发送的以太坊数量。</li>
+<li><code>data</code>：calldata，包含调用函数的选择器和参数。</li>
+<li><code>nonce</code>：初始为<code>0</code>，随着多签合约每笔成功执行的交易递增的值，可以防止签名重放攻击。</li>
+<li><code>chainid</code>：链id，防止不同链的签名重放攻击。</li>
+</ul>
+</li>
+<li><p>收集多签签名（链下）：将上一步的交易ABI编码并计算哈希，得到交易哈希，然后让多签人签名，并拼接到一起得到打包签名。对ABI编码和哈希不了解的，可以看WTF Solidity极简教程<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/27_ABIEncode/readme.md">第27讲</a>和<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/28_Hash/readme.md">第28讲</a>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">交易哈希: 0xc1b055cf8e78338db21407b425114a2e258b0318879327945b661bfdea570e66<br><br>多签人A签名: 0x014db45aa753fefeca3f99c2cb38435977ebb954f779c2b6af6f6365ba4188df542031ace9bdc53c655ad2d4794667ec2495196da94204c56b1293d0fbfacbb11c<br><br>多签人B签名: 0xbe2e0e6de5574b7f65cad1b7062be95e7d73fe37dd8e888cef5eb12e964ddc597395fa48df1219e7f74f48d86957f545d0fbce4eee1adfbaff6c267046ade0d81c<br><br>打包签名：<br>0x014db45aa753fefeca3f99c2cb38435977ebb954f779c2b6af6f6365ba4188df542031ace9bdc53c655ad2d4794667ec2495196da94204c56b1293d0fbfacbb11cbe2e0e6de5574b7f65cad1b7062be95e7d73fe37dd8e888cef5eb12e964ddc597395fa48df1219e7f74f48d86957f545d0fbce4eee1adfbaff6c267046ade0d81c<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>调用多签合约的执行函数，验证签名并执行交易（链上）。对验证签名和执行交易不了解的，可以看WTF Solidity极简教程<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/22_Call/readme.md">第22讲</a>和<a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/37_Signature/readme.md">第37讲</a>。</p>
+</li>
+</ol>
+<h3 id="事件-3"><a href="#事件-3" class="headerlink" title="事件"></a>事件</h3><p><code>MultisigWallet</code>合约有<code>2</code>个事件，<code>ExecutionSuccess</code>和<code>ExecutionFailure</code>，分别在交易成功和失败时释放，参数为交易哈希。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs solidity">event ExecutionSuccess(bytes32 txHash);    // 交易成功事件<br>event ExecutionFailure(bytes32 txHash);    // 交易失败事件<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="状态变量-3"><a href="#状态变量-3" class="headerlink" title="状态变量"></a>状态变量</h3><p><code>MultisigWallet</code>合约有<code>5</code>个状态变量：</p>
+<ol>
+<li><code>owners</code>：多签持有人数组</li>
+<li><code>isOwner</code>：<code>address =&gt; bool</code>的映射，记录一个地址是否为多签持有人。</li>
+<li><code>ownerCount</code>：多签持有人数量</li>
+<li><code>threshold</code>：多签执行门槛，交易至少有n个多签人签名才能被执行。</li>
+<li><code>nonce</code>：初始为<code>0</code>，随着多签合约每笔成功执行的交易递增的值，可以防止签名重放攻击。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">address[] public owners;                   // 多签持有人数组 <br>mapping(address =&gt; bool) public isOwner;   // 记录一个地址是否为多签持有人<br>uint256 public ownerCount;                 // 多签持有人数量<br>uint256 public threshold;                  // 多签执行门槛，交易至少有n个多签人签名才能被执行。<br>uint256 public nonce;                      // nonce，防止签名重放攻击<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="函数-3"><a href="#函数-3" class="headerlink" title="函数"></a>函数</h3><p><code>MultisigWallet</code>合约有<code>6</code>个函数：</p>
+<ol>
+<li><p>构造函数：调用<code>_setupOwners()</code>，初始化和多签持有人和执行门槛相关的变量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 构造函数，初始化owners, isOwner, ownerCount, threshold <br>constructor(        <br>    address[] memory _owners,<br>    uint256 _threshold<br>) &#123;<br>    _setupOwners(_owners, _threshold);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>_setupOwners()</code>：在合约部署时被构造函数调用，初始化<code>owners</code>，<code>isOwner</code>，<code>ownerCount</code>，<code>threshold</code>状态变量。传入的参数中，执行门槛需大于等于<code>1</code>且小于等于多签人数；多签地址不能为<code>0</code>地址且不能重复。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev 初始化owners, isOwner, ownerCount,threshold <br>/// @param _owners: 多签持有人数组<br>/// @param _threshold: 多签执行门槛，至少有几个多签人签署了交易<br>function _setupOwners(address[] memory _owners, uint256 _threshold) internal &#123;<br>    // threshold没被初始化过<br>    require(threshold == 0, &quot;WTF5000&quot;);<br>    // 多签执行门槛 小于或等于 多签人数<br>    require(_threshold &lt;= _owners.length, &quot;WTF5001&quot;);<br>    // 多签执行门槛至少为1<br>    require(_threshold &gt;= 1, &quot;WTF5002&quot;);<br><br>    for (uint256 i = 0; i &lt; _owners.length; i++) &#123;<br>        address owner = _owners[i];<br>        // 多签人不能为0地址，本合约地址，不能重复<br>        require(owner != address(0) &amp;&amp; owner != address(this) &amp;&amp; !isOwner[owner], &quot;WTF5003&quot;);<br>        owners.push(owner);<br>        isOwner[owner] = true;<br>    &#125;<br>    ownerCount = _owners.length;<br>    threshold = _threshold;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>execTransaction()</code>：在收集足够的多签签名后，验证签名并执行交易。传入的参数为目标地址<code>to</code>，发送的以太坊数额<code>value</code>，数据<code>data</code>，以及打包签名<code>signatures</code>。打包签名就是将收集的多签人对交易哈希的签名，按多签持有人地址从小到大顺序，打包到一个[bytes]数据中。这一步调用了<code>encodeTransactionData()</code>编码交易，调用了<code>checkSignatures()</code>检验签名是否有效、数量是否达到执行门槛。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev 在收集足够的多签签名后，执行交易<br>/// @param to 目标合约地址<br>/// @param value msg.value，支付的以太坊<br>/// @param data calldata<br>/// @param signatures 打包的签名，对应的多签地址由小到达，方便检查。 (&#123;bytes32 r&#125;&#123;bytes32 s&#125;&#123;uint8 v&#125;) (第一个多签的签名, 第二个多签的签名 ... )<br>function execTransaction(<br>    address to,<br>    uint256 value,<br>    bytes memory data,<br>    bytes memory signatures<br>) public payable virtual returns (bool success) &#123;<br>    // 编码交易数据，计算哈希<br>    bytes32 txHash = encodeTransactionData(to, value, data, nonce, block.chainid);<br>    nonce++;  // 增加nonce<br>    checkSignatures(txHash, signatures); // 检查签名<br>    // 利用call执行交易，并获取交易结果<br>    (success, ) = to.call&#123;value: value&#125;(data);<br>    require(success , &quot;WTF5004&quot;);<br>    if (success) emit ExecutionSuccess(txHash);<br>    else emit ExecutionFailure(txHash);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>checkSignatures()</code>：检查签名和交易数据的哈希是否对应，数量是否达到门槛，若否，交易会revert。单个签名长度为65字节，因此打包签名的长度要长于或等于<code>threshold * 65</code>。调用了<code>signatureSplit()</code>分离出单个签名。这个函数的大致思路：</p>
+<ul>
+<li>用ecdsa获取签名地址.</li>
+<li>利用 <code>currentOwner &gt; lastOwner</code> 确定签名来自不同多签（多签地址递增）。</li>
+<li>利用<code>isOwner[currentOwner]</code>确定签名者为多签持有人。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/**<br> * @dev 检查签名和交易数据是否对应。如果是无效签名，交易会revert<br> * @param dataHash 交易数据哈希<br> * @param signatures 几个多签签名打包在一起<br> */<br>function checkSignatures(<br>    bytes32 dataHash,<br>    bytes memory signatures<br>) public view &#123;<br>    // 读取多签执行门槛<br>    uint256 _threshold = threshold;<br>    require(_threshold &gt; 0, &quot;WTF5005&quot;);<br><br>    // 检查签名长度足够长<br>    require(signatures.length &gt;= _threshold * 65, &quot;WTF5006&quot;);<br><br>    // 通过一个循环，检查收集的签名是否有效<br>    // 大概思路：<br>    // 1. 用ecdsa先验证签名是否有效<br>    // 2. 利用 currentOwner &gt; lastOwner 确定签名来自不同多签（多签地址递增）<br>    // 3. 利用 isOwner[currentOwner] 确定签名者为多签持有人<br>    address lastOwner = address(0); <br>    address currentOwner;<br>    uint8 v;<br>    bytes32 r;<br>    bytes32 s;<br>    uint256 i;<br>    for (i = 0; i &lt; _threshold; i++) &#123;<br>        (v, r, s) = signatureSplit(signatures, i);<br>        // 利用ecrecover检查签名是否有效<br>        currentOwner = ecrecover(keccak256(abi.encodePacked(&quot;\x19Ethereum Signed Message:\n32&quot;, dataHash)), v, r, s);<br>        require(currentOwner &gt; lastOwner &amp;&amp; isOwner[currentOwner], &quot;WTF5007&quot;);<br>        lastOwner = currentOwner;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>signatureSplit()</code>：将单个签名从打包的签名分离出来，参数分别为打包签名<code>signatures</code>和要读取的签名位置<code>pos</code>。利用了内联汇编，将签名的<code>r</code>，<code>s</code>，和<code>v</code>三个值分离出来。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// 将单个签名从打包的签名分离出来<br>/// @param signatures 打包签名<br>/// @param pos 要读取的多签index.<br>function signatureSplit(bytes memory signatures, uint256 pos)<br>    internal<br>    pure<br>    returns (<br>        uint8 v,<br>        bytes32 r,<br>        bytes32 s<br>    )<br>&#123;<br>    // 签名的格式：&#123;bytes32 r&#125;&#123;bytes32 s&#125;&#123;uint8 v&#125;<br>    assembly &#123;<br>        let signaturePos := mul(0x41, pos)<br>        r := mload(add(signatures, add(signaturePos, 0x20)))<br>        s := mload(add(signatures, add(signaturePos, 0x40)))<br>        v := and(mload(add(signatures, add(signaturePos, 0x41))), 0xff)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><code>encodeTransactionData()</code>：将交易数据打包并计算哈希，利用了<code>abi.encode()</code>和<code>keccak256()</code>函数。这个函数可以计算出一个交易的哈希，然后在链下让多签人签名并收集，再调用<code>execTransaction()</code>函数执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev 编码交易数据<br>/// @param to 目标合约地址<br>/// @param value msg.value，支付的以太坊<br>/// @param data calldata<br>/// @param _nonce 交易的nonce.<br>/// @param chainid 链id<br>/// @return 交易哈希bytes.<br>function encodeTransactionData(<br>    address to,<br>    uint256 value,<br>    bytes memory data,<br>    uint256 _nonce,<br>    uint256 chainid<br>) public pure returns (bytes32) &#123;<br>    bytes32 safeTxHash =<br>        keccak256(<br>            abi.encode(<br>                to,<br>                value,<br>                keccak256(data),<br>                _nonce,<br>                chainid<br>            )<br>        );<br>    return safeTxHash;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="Remix演示"><a href="#Remix演示" class="headerlink" title="Remix演示"></a><code>Remix</code>演示</h2>
                 
               </div>
             
