@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-06-04T11:50:46.000Z">
-<meta property="article:modified_time" content="2025-06-06T10:27:59.522Z">
+<meta property="article:modified_time" content="2025-06-07T10:32:09.425Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          11k 字
+          14k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          89 分钟
+          115 分钟
         
       </span>
     
@@ -686,7 +686,90 @@
 <li><p><code>encodeTransactionData()</code>：将交易数据打包并计算哈希，利用了<code>abi.encode()</code>和<code>keccak256()</code>函数。这个函数可以计算出一个交易的哈希，然后在链下让多签人签名并收集，再调用<code>execTransaction()</code>函数执行。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev 编码交易数据<br>/// @param to 目标合约地址<br>/// @param value msg.value，支付的以太坊<br>/// @param data calldata<br>/// @param _nonce 交易的nonce.<br>/// @param chainid 链id<br>/// @return 交易哈希bytes.<br>function encodeTransactionData(<br>    address to,<br>    uint256 value,<br>    bytes memory data,<br>    uint256 _nonce,<br>    uint256 chainid<br>) public pure returns (bytes32) &#123;<br>    bytes32 safeTxHash =<br>        keccak256(<br>            abi.encode(<br>                to,<br>                value,<br>                keccak256(data),<br>                _nonce,<br>                chainid<br>            )<br>        );<br>    return safeTxHash;<br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ol>
-<h2 id="Remix演示"><a href="#Remix演示" class="headerlink" title="Remix演示"></a><code>Remix</code>演示</h2>
+<h1 id="51-ERC4626-代币化金库标准"><a href="#51-ERC4626-代币化金库标准" class="headerlink" title="51. ERC4626 代币化金库标准"></a>51. ERC4626 代币化金库标准</h1><h2 id="金库"><a href="#金库" class="headerlink" title="金库"></a>金库</h2><p>金库合约是 DeFi 乐高中的基础，它允许你把基础资产（代币）质押到合约中，换取一定收益，包括以下应用场景:</p>
+<ul>
+<li>收益农场: 在 Yearn Finance 中，你可以质押 <code>USDT</code> 获取利息。</li>
+<li>借贷: 在 AAVE 中，你可以出借 <code>ETH</code> 获取存款利息和贷款。</li>
+<li>质押: 在 Lido 中，你可以质押 <code>ETH</code> 参与 ETH 2.0 质押，得到可以生息的 <code>stETH</code>。</li>
+</ul>
+<h2 id="ERC4626"><a href="#ERC4626" class="headerlink" title="ERC4626"></a>ERC4626</h2><p><img src="/img/web3/51-1.png" srcset="/img/loading.gif" lazyload alt="51-1"></p>
+<p>由于金库合约缺乏标准，写法五花八门，一个收益聚合器需要写很多接口对接不同的 DeFi 项目。ERC4626 代币化金库标准（Tokenized Vault Standard）横空出世，使得 DeFi 能够轻松扩展。它具有以下优点:</p>
+<ol>
+<li>代币化: ERC4626 继承了 ERC20，向金库存款时，将得到同样符合 ERC20 标准的金库份额，比如质押 ETH，自动获得 stETH。</li>
+<li>更好的流通性: 由于代币化，你可以在不取回基础资产的情况下，利用金库份额做其他事情。拿 Lido 的 stETH 为例，你可以用它在 Uniswap 上提供流动性或交易，而不需要取出其中的 ETH。</li>
+<li>更好的可组合性: 有了标准之后，用一套接口可以和所有 ERC4626 金库交互，让基于金库的应用、插件、工具开发更容易。</li>
+</ol>
+<p>总而言之，ERC4626 对于 DeFi 的重要性不亚于 ERC721 对于 NFT 的重要性。</p>
+<h3 id="ERC4626-要点"><a href="#ERC4626-要点" class="headerlink" title="ERC4626 要点"></a>ERC4626 要点</h3><p>ERC4626 标准主要实现了以下几个逻辑：</p>
+<ol>
+<li>ERC20: ERC4626 继承了 ERC20，金库份额就是用 ERC20 代币代表的：用户将特定的 ERC20 基础资产（比如 WETH）存进金库，合约会给他铸造特定数量的金库份额代币；当用户从金库中提取基础资产时，会销毁相应数量的金库份额代币。<code>asset()</code> 函数会返回金库的基础资产的代币地址。</li>
+<li>存款逻辑：让用户存入基础资产，并铸造相应数量的金库份额。相关函数为 <code>deposit()</code> 和 <code>mint()</code>。<code>deposit(uint assets, address receiver)</code> 函数让用户存入 <code>assets</code> 单位的资产，并铸造相应数量的金库份额给 <code>receiver</code> 地址。<code>mint(uint shares, address receiver)</code> 与它类似，只不过是以将铸造的金库份额作为参数。</li>
+<li>提款逻辑：让用户销毁金库份额，并提取金库中相应数量的基础资产。相关函数为 <code>withdraw()</code> 和 <code>redeem()</code>，前者以取出基础资产数量为参数，后者以销毁的金库份额为参数。</li>
+<li>会计和限额逻辑：ERC4626 标准中其他的函数是为了统计金库中的资产，存款&#x2F;提款限额，和存款&#x2F;提款的基础资产和金库份额数量。</li>
+</ol>
+<h3 id="IERC4626-接口合约"><a href="#IERC4626-接口合约" class="headerlink" title="IERC4626 接口合约"></a>IERC4626 接口合约</h3><p>IERC4626 接口合约共包含 <code>2</code> 个事件:</p>
+<ul>
+<li><code>Deposit</code> 事件: 存款时触发。</li>
+<li><code>Withdraw</code> 事件: 取款时触发。</li>
+</ul>
+<p>IERC4626 接口合约还包含 <code>16</code> 个函数，根据功能分为 <code>4</code> 大类：元数据，存款&#x2F;提款逻辑，会计逻辑，和存款&#x2F;提款限额逻辑。</p>
+<ul>
+<li><p>元数据</p>
+<ul>
+<li><code>asset()</code>: 返回金库的基础资产代币地址，用于存款，取款。</li>
+</ul>
+</li>
+<li><p>存款&#x2F;提款逻辑</p>
+<ul>
+<li><code>deposit()</code>: 存款函数，用户向金库存入 <code>assets</code> 单位的基础资产，然后合约铸造 <code>shares</code> 单位的金库额度给 <code>receiver</code> 地址。会释放 <code>Deposit</code> 事件。</li>
+<li><code>mint()</code>: 铸造函数（也是存款函数），用户指定想获得的 <code>shares</code> 单位的金库额度，函数经过计算后得出需要存入的 <code>assets</code> 单位的基础资产数量，然后合约从用户账户转出 <code>assets</code> 单位的基础资产，再给 <code>receiver</code> 地址铸造指定数量的金库额度。会释放 <code>Deposit</code> 事件。</li>
+<li><code>withdraw()</code>: 提款函数，<code>owner</code> 地址销毁 <code>share</code> 单位的金库额度，然后合约将相应数量的基础资产发送给 <code>receiver</code> 地址。</li>
+<li><code>redeem()</code>: 赎回函数（也是提款函数），<code>owner</code> 地址销毁 <code>shares</code> 数量的金库额度，然后合约将相应单位的基础资产发给 <code>receiver</code> 地址</li>
+</ul>
+</li>
+<li><p>会计逻辑</p>
+<ul>
+<li><code>totalAssets()</code>: 返回金库中管理的基础资产代币总额。</li>
+<li><code>convertToShares()</code>: 返回利用一定数额基础资产可以换取的金库额度。</li>
+<li><code>convertToAssets()</code>: 返回利用一定数额金库额度可以换取的基础资产。</li>
+<li><code>previewDeposit()</code>: 用于用户在当前链上环境模拟存款一定数额的基础资产能够获得的金库额度。</li>
+<li><code>previewMint()</code>: 用于用户在当前链上环境模拟铸造一定数额的金库额度需要存款的基础资产数量。</li>
+<li><code>previewWithdraw()</code>: 用于用户在当前链上环境模拟提款一定数额的基础资产需要赎回的金库份额。</li>
+<li><code>previewRedeem()</code>: 用于链上和链下用户在当前链上环境模拟销毁一定数额的金库额度能够赎回的基础资产数量。</li>
+</ul>
+</li>
+<li><p>存款&#x2F;提款限额逻辑</p>
+<ul>
+<li><code>maxDeposit()</code>: 返回某个用户地址单次存款可存的最大基础资产数额。</li>
+<li><code>maxMint()</code>: 返回某个用户地址单次铸造可以铸造的最大金库额度。</li>
+<li><code>maxWithdraw()</code>: 返回某个用户地址单次取款可以提取的最大基础资产额度。</li>
+<li><code>maxRedeem()</code>: 返回某个用户地址单次赎回可以销毁的最大金库额度。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// Author: 0xAA from WTF Academy<br><br>pragma solidity ^0.8.0;<br><br>import &quot;@openzeppelin/contracts/token/ERC20/IERC20.sol&quot;;<br>import &quot;@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol&quot;;<br><br>/**<br> * @dev ERC4626 &quot;代币化金库标准&quot;的接口合约<br> * https://eips.ethereum.org/EIPS/eip-4626[ERC-4626].<br> */<br>interface IERC4626 is IERC20, IERC20Metadata &#123;<br>    /*//////////////////////////////////////////////////////////////<br>                                 事件<br>    //////////////////////////////////////////////////////////////*/<br>    // 存款时触发<br>    event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares);<br><br>    // 取款时触发<br>    event Withdraw(<br>        address indexed sender,<br>        address indexed receiver,<br>        address indexed owner,<br>        uint256 assets,<br>        uint256 shares<br>    );<br><br>    /*//////////////////////////////////////////////////////////////<br>                            元数据<br>    //////////////////////////////////////////////////////////////*/<br>    /**<br>     * @dev 返回金库的基础资产代币地址 （用于存款，取款）<br>     * - 必须是 ERC20 代币合约地址.<br>     * - 不能revert<br>     */<br>    function asset() external view returns (address assetTokenAddress);<br><br>    /*//////////////////////////////////////////////////////////////<br>                        存款/提款逻辑<br>    //////////////////////////////////////////////////////////////*/<br>    /**<br>     * @dev 存款函数: 用户向金库存入 assets 单位的基础资产，然后合约铸造 shares 单位的金库额度给 receiver 地址<br>     *<br>     * - 必须释放 Deposit 事件.<br>     * - 如果资产不能存入，必须revert，比如存款数额大大于上限等。<br>     */<br>    function deposit(uint256 assets, address receiver) external returns (uint256 shares);<br><br>    /**<br>     * @dev 铸造函数: 用户需要存入 assets 单位的基础资产，然后合约给 receiver 地址铸造 share 数量的金库额度<br>     * - 必须释放 Deposit 事件.<br>     * - 如果全部金库额度不能铸造，必须revert，比如铸造数额大大于上限等。<br>     */<br>    function mint(uint256 shares, address receiver) external returns (uint256 assets);<br><br>    /**<br>     * @dev 提款函数: owner 地址销毁 share 单位的金库额度，然后合约将 assets 单位的基础资产发送给 receiver 地址<br>     * - 释放 Withdraw 事件<br>     * - 如果全部基础资产不能提取，将revert<br>     */<br>    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);<br><br>    /**<br>     * @dev 赎回函数: owner 地址销毁 shares 数量的金库额度，然后合约将 assets 单位的基础资产发给 receiver 地址<br>     * - 释放 Withdraw 事件<br>     * - 如果金库额度不能全部销毁，则revert<br>     */<br>    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);<br><br>    /*//////////////////////////////////////////////////////////////<br>                            会计逻辑<br>    //////////////////////////////////////////////////////////////*/<br><br>    /**<br>     * @dev 返回金库中管理的基础资产代币总额<br>     * - 要包含利息<br>     * - 要包含费用<br>     * - 不能revert<br>     */<br>    function totalAssets() external view returns (uint256 totalManagedAssets);<br><br>    /**<br>     * @dev 返回利用一定数额基础资产可以换取的金库额度<br>     * - 不要包含费用<br>     * - 不包含滑点<br>     * - 不能revert<br>     */<br>    function convertToShares(uint256 assets) external view returns (uint256 shares);<br><br>    /**<br>     * @dev 返回利用一定数额金库额度可以换取的基础资产<br>     * - 不要包含费用<br>     * - 不包含滑点<br>     * - 不能revert<br>     */<br>    function convertToAssets(uint256 shares) external view returns (uint256 assets);<br><br>    /**<br>     * @dev 用于链上和链下用户在当前链上环境模拟存款一定数额的基础资产能够获得的金库额度<br>     * - 返回值要接近且不大于在同一交易进行存款得到的金库额度<br>     * - 不要考虑 maxDeposit 等限制，假设用户的存款交易会成功<br>     * - 要考虑费用<br>     * - 不能revert<br>     * NOTE: 可以利用 convertToAssets 和 previewDeposit 返回值的差值来计算滑点<br>     */<br>    function previewDeposit(uint256 assets) external view returns (uint256 shares);<br><br>    /**<br>     * @dev 用于链上和链下用户在当前链上环境模拟铸造 shares 数额的金库额度需要存款的基础资产数量<br>     * - 返回值要接近且不小于在同一交易进行铸造一定数额金库额度所需的存款数量<br>     * - 不要考虑 maxMint 等限制，假设用户的存款交易会成功<br>     * - 要考虑费用<br>     * - 不能revert<br>     */<br>    function previewMint(uint256 shares) external view returns (uint256 assets);<br><br>    /**<br>     * @dev 用于链上和链下用户在当前链上环境模拟提款 assets 数额的基础资产需要赎回的金库份额<br>     * - 返回值要接近且不大于在同一交易进行提款一定数额基础资产所需赎回的金库份额<br>     * - 不要考虑 maxWithdraw 等限制，假设用户的提款交易会成功<br>     * - 要考虑费用<br>     * - 不能revert<br>     */<br>    function previewWithdraw(uint256 assets) external view returns (uint256 shares);<br><br>    /**<br>     * @dev 用于链上和链下用户在当前链上环境模拟销毁 shares 数额的金库额度能够赎回的基础资产数量<br>     * - 返回值要接近且不小于在同一交易进行销毁一定数额的金库额度所能赎回的基础资产数量<br>     * - 不要考虑 maxRedeem 等限制，假设用户的赎回交易会成功<br>     * - 要考虑费用<br>     * - 不能revert.<br>     */<br>    function previewRedeem(uint256 shares) external view returns (uint256 assets);<br><br>    /*//////////////////////////////////////////////////////////////<br>                     存款/提款限额逻辑<br>    //////////////////////////////////////////////////////////////*/<br>    /**<br>     * @dev 返回某个用户地址单次存款可存的最大基础资产数额。<br>     * - 如果有存款上限，那么返回值应该是个有限值<br>     * - 返回值不能超过 2 ** 256 - 1 <br>     * - 不能revert<br>     */<br>    function maxDeposit(address receiver) external view returns (uint256 maxAssets);<br><br>    /**<br>     * @dev 返回某个用户地址单次铸造可以铸造的最大金库额度<br>     * - 如果有铸造上限，那么返回值应该是个有限值<br>     * - 返回值不能超过 2 ** 256 - 1 <br>     * - 不能revert<br>     */<br>    function maxMint(address receiver) external view returns (uint256 maxShares);<br><br>    /**<br>     * @dev 返回某个用户地址单次取款可以提取的最大基础资产额度<br>     * - 返回值应该是个有限值<br>     * - 不能revert<br>     */<br>    function maxWithdraw(address owner) external view returns (uint256 maxAssets);<br><br>    /**<br>     * @dev 返回某个用户地址单次赎回可以销毁的最大金库额度<br>     * - 返回值应该是个有限值<br>     * - 如果没有其他限制，返回值应该是 balanceOf(owner)<br>     * - 不能revert<br>     */<br>    function maxRedeem(address owner) external view returns (uint256 maxShares);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="52-EIP712-类型化数据签名"><a href="#52-EIP712-类型化数据签名" class="headerlink" title="52. EIP712 类型化数据签名"></a>52. EIP712 类型化数据签名</h1><p><a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/blob/main/52_EIP712/readme.md">https://github.com/AmazingAng/WTF-Solidity/blob/main/52_EIP712/readme.md</a></p>
+<h1 id="54-跨链桥"><a href="#54-跨链桥" class="headerlink" title="54. 跨链桥"></a>54. 跨链桥</h1><p><a target="_blank" rel="noopener" href="https://github.com/AmazingAng/WTF-Solidity/tree/main/54_CrossChainBridge">https://github.com/AmazingAng/WTF-Solidity/tree/main/54_CrossChainBridge</a></p>
+<h1 id="55-多重调用"><a href="#55-多重调用" class="headerlink" title="55. 多重调用"></a>55. 多重调用</h1><h2 id="MultiCall"><a href="#MultiCall" class="headerlink" title="MultiCall"></a>MultiCall</h2><p>在Solidity中，MultiCall（多重调用）合约的设计能让我们在一次交易中执行多个函数调用。它的优点如下：</p>
+<ol>
+<li>方便性：MultiCall能让你在一次交易中对不同合约的不同函数进行调用，同时这些调用还可以使用不同的参数。比如你可以一次性查询多个地址的ERC20代币余额。</li>
+<li>节省gas：MultiCall能将多个交易合并成一次交易中的多个调用，从而节省gas。</li>
+<li>原子性：MultiCall能让用户在一笔交易中执行所有操作，保证所有操作要么全部成功，要么全部失败，这样就保持了原子性。比如，你可以按照特定的顺序进行一系列的代币交易。</li>
+</ol>
+<h2 id="MultiCall-合约"><a href="#MultiCall-合约" class="headerlink" title="MultiCall 合约"></a>MultiCall 合约</h2><p>接下来让我们一起来研究一下MultiCall合约，它由 MakerDAO 的 <a target="_blank" rel="noopener" href="https://github.com/mds1/multicall/blob/main/src/Multicall3.sol">MultiCall</a> 简化而成。</p>
+<p>MultiCall 合约定义了两个结构体:</p>
+<ul>
+<li><code>Call</code>: 这是一个调用结构体，包含要调用的目标合约 <code>target</code>，指示是否允许调用失败的标记 <code>allowFailure</code>，和要调用的字节码 <code>call data</code>。</li>
+<li><code>Result</code>: 这是一个结果结构体，包含了指示调用是否成功的标记 <code>success</code>和调用返回的字节码 <code>return data</code>。</li>
+</ul>
+<p>该合约只包含了一个函数，用于执行多重调用：</p>
+<ul>
+<li><code>multicall()</code>: 这个函数的参数是一个由Call结构体组成的数组，这样做可以确保传入的target和data的长度一致。函数通过一个循环来执行多个调用，并在调用失败时回滚交易。</li>
+</ul>
+<h3 id="代码-4"><a href="#代码-4" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.19;<br><br>contract Multicall &#123;<br>    // Call结构体，包含目标合约target，是否允许调用失败allowFailure，和call data<br>    struct Call &#123;<br>        address target;<br>        bool allowFailure;<br>        bytes callData;<br>    &#125;<br><br>    // Result结构体，包含调用是否成功和return data<br>    struct Result &#123;<br>        bool success;<br>        bytes returnData;<br>    &#125;<br><br>    /// @notice 将多个调用（支持不同合约/不同方法/不同参数）合并到一次调用<br>    /// @param calls Call结构体组成的数组<br>    /// @return returnData Result结构体组成的数组<br>    function multicall(Call[] calldata calls) public returns (Result[] memory returnData) &#123;<br>        uint256 length = calls.length;<br>        returnData = new Result[](length);<br>        Call calldata calli;<br>        <br>        // 在循环中依次调用<br>        for (uint256 i = 0; i &lt; length; i++) &#123;<br>            Result memory result = returnData[i];<br>            calli = calls[i];<br>            (result.success, result.returnData) = calli.target.call(calli.callData);<br>            // 如果 calli.allowFailure 和 result.success 均为 false，则 revert<br>            if (!(calli.allowFailure || result.success))&#123;<br>                revert(&quot;Multicall: call failed&quot;);<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
                 
               </div>
             
