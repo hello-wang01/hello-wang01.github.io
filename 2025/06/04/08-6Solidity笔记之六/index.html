@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/web3/eth2.jpg">
 <meta property="article:published_time" content="2025-06-04T11:50:46.000Z">
-<meta property="article:modified_time" content="2025-06-07T11:29:36.242Z">
+<meta property="article:modified_time" content="2025-06-09T13:30:08.764Z">
 <meta property="article:author" content="Wangxiaowang">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/web3/eth2.jpg">
@@ -250,7 +250,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          14k 字
+          15k 字
         
       </span>
     
@@ -261,7 +261,7 @@
         
         
         
-          115 分钟
+          124 分钟
         
       </span>
     
@@ -769,6 +769,68 @@
 </ul>
 <h3 id="代码-4"><a href="#代码-4" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.19;<br><br>contract Multicall &#123;<br>    // Call结构体，包含目标合约target，是否允许调用失败allowFailure，和call data<br>    struct Call &#123;<br>        address target;<br>        bool allowFailure;<br>        bytes callData;<br>    &#125;<br><br>    // Result结构体，包含调用是否成功和return data<br>    struct Result &#123;<br>        bool success;<br>        bytes returnData;<br>    &#125;<br><br>    /// @notice 将多个调用（支持不同合约/不同方法/不同参数）合并到一次调用<br>    /// @param calls Call结构体组成的数组<br>    /// @return returnData Result结构体组成的数组<br>    function multicall(Call[] calldata calls) public returns (Result[] memory returnData) &#123;<br>        uint256 length = calls.length;<br>        returnData = new Result[](length);<br>        Call calldata calli;<br>        <br>        // 在循环中依次调用<br>        for (uint256 i = 0; i &lt; length; i++) &#123;<br>            Result memory result = returnData[i];<br>            calli = calls[i];<br>            (result.success, result.returnData) = calli.target.call(calli.callData);<br>            // 如果 calli.allowFailure 和 result.success 均为 false，则 revert<br>            if (!(calli.allowFailure || result.success))&#123;<br>                revert(&quot;Multicall: call failed&quot;);<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<h1 id="56-去中心化交易所"><a href="#56-去中心化交易所" class="headerlink" title="56. 去中心化交易所"></a>56. 去中心化交易所</h1><h2 id="自动做市商"><a href="#自动做市商" class="headerlink" title="自动做市商"></a>自动做市商</h2><p>自动做市商（Automated Market Maker，简称 AMM）是一种算法，或者说是一种在区块链上运行的智能合约，它允许数字资产之间的去中心化交易。AMM 的引入开创了一种全新的交易方式，无需传统的买家和卖家进行订单匹配，而是通过一种预设的数学公式（比如，常数乘积公式）创建一个流动性池，使得用户可以随时进行交易。</p>
+<h2 id="去中心化交易所"><a href="#去中心化交易所" class="headerlink" title="去中心化交易所"></a>去中心化交易所</h2><p>下面，我们用智能合约写一个去中心化交易所 <code>SimpleSwap</code>，支持用户交易一对代币。</p>
+<p><code>SimpleSwap</code> 继承了 ERC20 代币标准，方便记录流动性提供者提供的流动性。在构造器中，我们指定一对代币地址 <code>token0</code> 和 <code>token1</code>，交易所仅支持这对代币。<code>reserve0</code> 和 <code>reserve1</code> 记录了合约中代币的储备量。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p>交易所主要有两类参与者：流动性提供者（Liquidity Provider，LP）和交易者（Trader）。下面我们分别实现这两部分的功能。1</p>
+</blockquote>
+<h3 id="流动性提供者"><a href="#流动性提供者" class="headerlink" title="流动性提供者"></a>流动性提供者</h3><p>流动性提供者给市场提供流动性，让交易者获得更好的报价和流动性，并收取一定费用。</p>
+<p><strong>增加流动性</strong></p>
+<p>首先，我们需要实现添加流动性的功能。当用户向代币池添加流动性时，合约要记录添加的LP份额。根据 Uniswap V2，LP份额如下计算：</p>
+<ol>
+<li><p>代币池被首次添加流动性时，LP份额 ΔL 由添加代币数量乘积的平方根决定:</p>
+<p>ΔL&#x3D;Δx∗Δy</p>
+</li>
+<li><p>非首次添加流动性时，LP份额由添加代币数量占池子代币储备量的比例决定（两个代币的比例取更小的那个）:</p>
+<p>ΔL&#x3D;L∗min(Δxx,Δyy)</p>
+</li>
+</ol>
+<p>因为 <code>SimpleSwap</code> 合约继承了 ERC20 代币标准，在计算好LP份额后，可以将份额以代币形式铸造给用户。</p>
+<p>下面的 <code>addLiquidity()</code> 函数实现了添加流动性的功能，主要步骤如下：</p>
+<ol>
+<li>将用户添加的代币转入合约，需要用户事先给合约授权。</li>
+<li>根据公式计算添加的流动性份额，并检查铸造的LP数量。</li>
+<li>更新合约的代币储备量。</li>
+<li>给流动性提供者铸造LP代币。</li>
+<li>释放 <code>Mint</code> 事件。</li>
+</ol>
+<p><strong>移除流动性</strong></p>
+<p>接下来，我们需要实现移除流动性的功能。当用户从池子中移除流动性 ΔL 时，合约要销毁LP份额代币，并按比例将代币返还给用户。返还代币的计算公式如下:</p>
+<p>Δx&#x3D;ΔLL∗x</p>
+<p>Δy&#x3D;ΔLL∗y</p>
+<p>下面的 <code>removeLiquidity()</code> 函数实现移除流动性的功能，主要步骤如下：</p>
+<ol>
+<li>获取合约中的代币余额。</li>
+<li>按LP的比例计算要转出的代币数量。</li>
+<li>检查代币数量。</li>
+<li>销毁LP份额。</li>
+<li>将相应的代币转账给用户。</li>
+<li>更新储备量。</li>
+<li>释放 <code>Burn</code> 事件。</li>
+</ol>
+<p>至此，合约中与流动性提供者相关的功能完成了，接下来是交易的部分。</p>
+<h3 id="交易"><a href="#交易" class="headerlink" title="交易"></a>交易</h3><p>在Swap合约中，用户可以使用一种代币交易另一种。那么我用 Δx单位的 token0，可以交换多少单位的 token1 呢？下面我们来简单推导一下。</p>
+<p>根据恒定乘积公式，交易前：</p>
+<p>k&#x3D;x∗y</p>
+<p>交易后，有：</p>
+<p>k&#x3D;(x+Δx)∗(y+Δy)</p>
+<p>交易前后 k 值不变，联立上面等式，可以得到：</p>
+<p>Δy&#x3D;−Δx∗yx+Δx</p>
+<p>因此，可以交换到的代币数量 Δy 由 Δx，$x$，和 y 决定。注意 Δx 和 Δy 的符号相反，因为转入会增加代币储备量，而转出会减少。</p>
+<p>下面的 <code>getAmountOut()</code> 实现了给定一个资产的数量和代币对的储备，计算交换另一个代币的数量。</p>
+<p>有了这一核心公式后，我们可以着手实现交易功能了。下面的 <code>swap()</code> 函数实现了交易代币的功能，主要步骤如下：</p>
+<ol>
+<li>用户在调用函数时指定用于交换的代币数量，交换的代币地址，以及换出另一种代币的最低数量。</li>
+<li>判断是 token0 交换 token1，还是 token1 交换 token0。</li>
+<li>利用上面的公式，计算交换出代币的数量。</li>
+<li>判断交换出的代币是否达到了用户指定的最低数量，这里类似于交易的滑点。</li>
+<li>将用户的代币转入合约。</li>
+<li>将交换的代币从合约转给用户。</li>
+<li>更新合约的代币储备量。</li>
+<li>释放 <code>Swap</code> 事件。</li>
+</ol>
 
                 
               </div>
